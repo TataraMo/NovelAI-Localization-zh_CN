@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      3.37
+// @version      3.38
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -71,6 +71,7 @@
         'Adjust >': '调整 >', // 补充提升至全局
         'Looks like your Library is empty.': '你的书库似乎是空的。', // 补充空白页状态
         'Image Generation': '图像生成',
+        'Image Gen': '图像生成',
         'Text Generation': '文本生成',
         'Tokenizer': '分词器',
         'User Scripts': '用户脚本',
