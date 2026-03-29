@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      3.48
+// @version      4.0
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -14,1341 +14,1540 @@
 // @license      GPL-3.0-or-later
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
 
     // ==========================================
-    // 1. 设置与功能初始化
+    // 1. 设置与开关管理
     // ==========================================
-    
-    document.documentElement.lang = 'zh-CN';
-
-    let isTitleModificationEnabled = true;
-    if (typeof GM_getValue === 'function') {
-        isTitleModificationEnabled = GM_getValue('isTitleModificationEnabled', true);
-    }
-
-    function updateMenuText() {
-        if (typeof GM_registerMenuCommand !== 'function' || typeof GM_unregisterMenuCommand !== 'function' || typeof GM_setValue !== 'function') return;
-        let menuText = isTitleModificationEnabled ? '禁用图像页标题修改' : '启用图像页标题修改';
-        if (window.myMenuCommandId) GM_unregisterMenuCommand(window.myMenuCommandId);
-        window.myMenuCommandId = GM_registerMenuCommand(menuText, function () {
-            isTitleModificationEnabled = !isTitleModificationEnabled;
-            GM_setValue('isTitleModificationEnabled', isTitleModificationEnabled);
-            alert('标题修改功能' + (isTitleModificationEnabled ? '已启用' : '已禁用') + '。\n提示：刷新前请确保生成的图像、参数等已经被保存！');
-            updateMenuText();
-        });
-    }
-
-    function modifyPageTitle(pathname) {
-        if (!isTitleModificationEnabled) return;
-        if (pathname.includes('/inspect')) {
-            document.title = '检视图像参数 - NovelAI';
-        } else if (pathname.includes('/image') || pathname.includes('/imagetools')) {
-            const originalTitle = document.title;
-            document.title = '图像生成 - NovelAI';
-            Object.defineProperty(document, 'title', {
-                get: function () { return originalTitle; },
-                set: function (value) { }
-            });
-        } else if (pathname.includes('/stor')) {
-            document.title = '故事写作 - NovelAI';
-        }
-    }
-
-    // ==========================================
-    // 2. 翻译字典库 (保持不变)
-    // ==========================================
-
-    const commonTranslationMap = {
-        // --- 侧边栏与全局通用菜单 ---
-        'Account Settings': '账号设置',
-        'User Settings': '用户设置',
-        'AI Settings': 'AI 设置',
-        'Other': '其他',
-        'Settings': '设置', // 补充提升至全局
-        'Adjust': '调整',   // 补充提升至全局
-        'Adjust >': '调整 >', // 补充提升至全局
-        'Looks like your Library is empty.': '你的书库似乎是空的。', // 补充空白页状态
-        'Image Generation': '图像生成',
-        'Image Gen': '图像生成',
-        'Text Generation': '文本生成',
-        'Tokenizer': '分词器',
-        'User Scripts': '用户脚本',
-        'Help': '帮助',
-        'Interactive Tutorials': '互动教程',
-        'Tutorial': '教程',
-        'Documentation': '文档',
-        'NovelAI Discord': 'NovelAI Discord 社区',
-        'Opus Tier': 'Opus 订阅',
-        'Scroll Tier': 'Scroll 订阅',
-        'Tablet Tier': 'Tablet 订阅',
-        'Paper Tier': 'Paper 订阅',
-        'Free Tier': '免费层级',
-        'History': '历史记录',
-
-        'Interface': '界面',
-        'Theme': '主题',
-        'Theme Editor': '主题编辑器',
-        'Apply & Save Theme': '应用并保存主题',
-        'Default Themes': '默认主题',
-        'Import': '导入',
-        'Export': '导出',
-        'This is paragraph text. Nice!': '这是段落正文示例。看起来不错！',
-        'This is a prompt.': '这是提示词示例。',
-        'This is AI text.': '这是 AI 生成的文本。',
-        'This is edited text.': '这是已编辑的文本。',
-        'This is new user text.': '这是用户新输入的文本。',
-        'This is highlighted text.': '这是高亮显示的文本。',
-        'Header Font': '标题字体',
-        'Paragraph Font': '段落字体',
-        'Header': '标题',
-        'Paragraph': '段落',
-        'Warning/Error': '警告/错误',
-        'Foreground': '前景色',
-        'Background': '背景色',
-        'Dark Background': '深色背景',
-        'Input Background': '输入框背景',
-        'Low Intensity Color': '低强度颜色',
-        'Mid Intensity Color': '中强度颜色',
-        'High Intensity Color': '高强度颜色',
-        'Account': '账号',
-        'Text To Speech': '文字转语音', 
-        'Defaults': '默认设置',
-        'Hotkeys': '快捷键',
-        'Support': '支持',
-        'Change Log': '更新日志',
-        'Logout': '退出登录',
-        'Current Tier': '当前订阅层级',
-        'Manage': '管理订阅',
-        'Your subscription renews around ': '你的订阅预计将在 ',
-        'Your subscription renews around': '你的订阅预计将在',
-        ' @ ': ' 更新。',
-        'Pen Name': '笔名',
-        'Change Settings': '更改设置', 
-        'Change': '更改',
-        'Email': '绑定邮箱',
-        'Password': '账号密码',
-        'Current Email': '当前邮箱',
-        'Old Email': '原邮箱',
-        'New Email': '新邮箱',
-        'Current Password': '当前密码',
-        'New Password': '新密码',
-        'Confirm New Password': '确认新密码',
-        'Delete Account': '永久注销账号',
-        'Not possible while subscribed.': '在拥有激活的订阅期间无法注销账号。',
-        'Request': '提交申请',
-        'Show Account ID': '显示账号 ID',
-        'Get Persistent API Token': '获取永久 API 密钥',
-        'Stay Informed.': '掌握最新动态。',
-        'Subscribe to our newsletter.': '订阅我们的新闻邮件，获取更新情报。',
-        'Subscribe': '订阅推送',
-        'Manage Cookie Preferences': '管理 Cookie 偏好设置',
-        'Welcome back, Author': '欢迎回来，作者',
-        'Save': '保存',
-        'Cancel': '取消',
-        'Enabled': '已启用',
-        'Disabled': '已禁用',
-        'English': '英文',
-        'UI Language': '界面语言',
-        'Default': '默认',
-        'Experimental': '实验性功能',
-        'Off': '关闭',
-        'Automatic': '自动',
-        'Permanent': '永久显示',
-        'NovelAI Dark': 'NovelAI 深色',
-        'NovelAI Light': 'NovelAI 浅色',
-        'Slate': '石板灰',
-        'Midnight Doll': '午夜人偶',
-        'Ink': '墨水黑',
-        'Wine': '酒红',
-        'Vibrowave': '迷幻波',
-        'Sand': '沙黄',
-        'Subtle Terminal': '柔和终端',
-        'Bubblegum': '泡泡糖',
-        'Matrix': '黑客帝国',
-        'Purple Noir': '暗夜紫',
-        'Gruvbox Dark': 'Gruvbox 深色',
-        'Counter Militant': '反恐迷彩',
-        'Amber': '琥珀棕',
-        'Frog': '青蛙绿',
-        'Sagiri': '纱雾粉',
-        'Monkey': '猴子蓝',
-        'NovelAI Dark (Legacy)': 'NovelAI 深色 (旧版)',
-        'Eczar': 'Eczar (默认衬线)',
-        'Kanit': 'Kanit (现代无衬线)',
-        'Josefin Sans': 'Josefin Sans (优雅无衬线)',
-        'Playfair Display': 'Playfair (古典衬线)',
-        'Atkinson Hyperlegible': 'Atkinson (高易读)',
-        'OpenDyslexic': 'OpenDyslexic (阅读障碍)',
-        'Source Sans Pro': 'Source Sans Pro (默认无衬线)',
-        'Montserrat': 'Montserrat (几何无衬线)',
-        'EB Garamond': 'EB Garamond (传统衬线)',
-        'Exo': 'Exo (科幻风)',
-        'Comic Neue': 'Comic Neue (手写风)',
-        'Inconsolata': 'Inconsolata (代码等宽)',
-        'Times New Roman': 'Times New Roman (新罗马)',
-        'Iosevka': 'Iosevka (紧凑等宽)',
-
-        // --- 用户脚本模态框提示 ---
-        'Some notes about user scripts.': '关于用户脚本的一些注意事项。',
-        'User scripts are custom TypeScript code that can modify and extend NovelAI in various ways. They can add new features or change existing ones. They\'re pretty cool, but there are some important things to keep in mind when using them.': '用户脚本是自定义的 TypeScript 代码，能够以多种方式修改和扩展 NovelAI。它们可以添加新功能或更改现有功能。它们非常酷，但在使用时有一些重要事项需要牢记。',
-        'User scripts are custom TypeScript code that can modify and extend NovelAI in various ways. They can add new features or change existing ones. They’re pretty cool, but there are some important things to keep in mind when using them.': '用户脚本是自定义的 TypeScript 代码，能够以多种方式修改和扩展 NovelAI。它们可以添加新功能或更改现有功能。它们非常酷，但在使用时有一些重要事项需要牢记。',
-        'Security': '安全性',
-        'Only use scripts from sources you trust. Scripts are run in a sandboxed environment and can\'t freely make network requests, but they can do a lot of things within NovelAI. A malicious script could at the very least annoy you, at the worst corrupt your data. Be cautious.': '仅使用您信任的来源的脚本。脚本在沙盒环境中运行，无法自由发出网络请求，但它们可以在 NovelAI 中执行大量操作。恶意脚本至少会给您带来困扰，最坏的情况下会损坏您的数据。请务必谨慎。',
-        'Only use scripts from sources you trust. Scripts are run in a sandboxed environment and can’t freely make network requests, but they can do a lot of things within NovelAI. A malicious script could at the very least annoy you, at the worst corrupt your data. Be cautious.': '仅使用您信任的来源的脚本。脚本在沙盒环境中运行，无法自由发出网络请求，但它们可以在 NovelAI 中执行大量操作。恶意脚本至少会给您带来困扰，最坏的情况下会损坏您的数据。请务必谨慎。',
-        'Performance Impact': '性能影响',
-        'Poorly written scripts can slow down NovelAI or cause instability. If you notice performance issues, try disabling your scripts to see if that helps.': '编写不佳的脚本可能会减慢 NovelAI 的运行速度或导致不稳定。如果您注意到性能问题，请尝试禁用脚本以查看是否有所帮助。',
-        'We can\'t provide support for issues caused by user scripts. If they destroy one of your stories, or cause other problems that isn\'t something we can help with.': '我们无法为由用户脚本引起的问题提供支持。如果它们破坏了您的某个故事，或导致了其他问题，我们将无能为力。',
-        'We can’t provide support for issues caused by user scripts. If they destroy one of your stories, or cause other problems that isn’t something we can help with.': '我们无法为由用户脚本引起的问题提供支持。如果它们破坏了您的某个故事，或导致了其他问题，我们将无能为力。',
-        'By using user scripts, you acknowledge that you understand these risks and agree to use them responsibly.': '使用用户脚本即表示您了解并接受这些风险，并同意负责任地使用它们。',
-        'Got it': '明白了',
-        'No thanks': '不了，谢谢',
-        'Select a script, create a new one, or import one.': '选择一个脚本，创建一个新脚本，或导入一个脚本。',
-        
-        // --- 新增图像格式与图库选项 ---
-        'Image Format for Generated Images': '生成图像的文件格式',
-        'WebP (Lossless)': 'WebP (无损)',
-        'Hide Quickstart Gallery': '隐藏快速上手图库',
-        'The quickstart gallery will be shown on the image generation page.': '快速上手图库将显示在图像生成页面上。',
-        'The quickstart gallery will be hidden on the image generation page.': '快速上手图库将在图像生成页面上隐藏。',
-        
-        // --- 存储相关设置全局化 ---
-        'Default Storage Location': '默认存储位置',
-        'Local': '本地',
-        'Server': '服务器',
-        'New & imported stories will be saved locally only.': '新生成的故事和导入的故事只会保存在本地。',
-        'New & imported stories will be saved locally and stored encrypted remotely.': '新生成的故事和导入的故事将保存在本地，并在加密后传输到远程服务器。',
-        'Exporting and backing up your stories is highly recommended, should your browser cache get cleared, or if you lose access to your account.': '强烈建议导出并备份您的故事。',
-        
-        // --- TTS 全局设置与修正 ---
-        'Text to Speech Source': 'TTS 语音源',
-        'Local TTS uses your browsers available speech synthesis capabilities.': '本地 TTS 使用您浏览器自带的语音合成功能。',
-        'Streamed TTS is higher quality, uses a model hosted by NovelAI, and requires an active subscription. 100 free generations given for trial purposes.': '流式 TTS 质量更高，使用由 NovelAI 托管的模型，需要有激活的订阅。提供 100 次免费生成用于试用。',
-        'Streamed': '流式',
-        'TTS will use NovelAI\'s remote TTS service.': 'TTS 将使用 NovelAI 的远程语音合成服务。',
-        'Speak Outputs': '朗读输出',
-        'Outputs will not be read.': '将不会朗读输出内容。',
-        'Speak Inputs': '朗读输入',
-        'Inputs will not be read.': '将不会朗读输入内容。',
-        'Speak HypeBot Comments': '朗读气氛组评论',
-        'HypeBot comments will not be read.': '将不会朗读气氛组评论。',
-        'Streamed TTS Settings': '流式 TTS 设置',
-        'Model': '模型',
-        'Story Voice': '故事语音',
-        'Text entered here will be used for the test/download buttons.': '此处输入的文本将用于测试/下载按钮。',
-        'This is a test for text to speech. A little harsh, a little slow, but always on point.': '这是一段语音合成测试。有点刺耳，有点慢，但总是恰到好处。',
-        'Saved Voices': '已保存的语音',
-        'Name': '名称',
-        'Save Voice': '保存语音',
-        'Delete Voice': '删除语音',
-        'Volume': '音量',
-        'Default: 1': '默认值: 1',
-        'Speed': '语速',
-        'Note: Will not affect the speed of downloaded audio.': '注意：不会影响下载音频的语速。',
-        'Test Voice': '测试语音',
-        'Local TTS Settings': '本地 TTS 设置',
-        'TTS will use the browsers Speech Synthesis API.': 'TTS 将使用浏览器的语音合成 API。',
-        'Outputs will be read by TTS.': '将通过 TTS 朗读输出内容。',
-        'Outputs will be read.': '将朗读输出内容。',
-        'Outputs will be read:': '将朗读输出内容：',
-        'In addition to outputs, Inputs will be read by TTS.': '除输出内容外，也将通过 TTS 朗读输入内容。',
-        'In addition to outputs, Inputs will be read.': '除输出内容外，也将朗读输入内容。',
-        'In addition to outputs, Inputs will be read:': '除输出内容外，也将朗读输入内容：',
-        'Has no effect if speak outputs is disabled': '如果禁用了“朗读输出”，则此项无效。',
-        'HypeBot comments will be read by TTS.': '将通过 TTS 朗读气氛组评论。',
-        'HypeBot comments will be read.': '将朗读气氛组评论。',
-        'HypeBot comments will be read:': '将朗读气氛组评论：',
-        
-        // --- 默认参数预设全局化与碎句拼合 ---
-        'Default AI Model': '默认 AI 模型',
-        'New stories will use this model by default.': '新故事将默认使用此模型。',
-        'New stories will use this model:': '新故事将使用此模型：',
-        'New stories': '新故事',
-        'New Stories': '新故事',
-        ' will use this model by default.': ' 将默认使用此模型。',
-        'will use this model by default.': '将默认使用此模型。',
-        'A massive and versatile 355B Mixture of Experts model.': '一个庞大且多功能，包含 355B 参数的混合专家模型。',
-        'Our largest and most formidable, built with Meta Llama 3 70B.': '我们最庞大、最强大的模型，基于 Meta Llama 3 70B 构建。',
-        'A fierce contender, now second best, crafted from the ground up.': '强有力的竞争者，现居第二，从零开始精心打造。',
-        'Our veteran powerhouse, still fast and reliable.': '我们经验丰富的主力模型，依然快速可靠。',
-        'A legacy Japanese language model - use is no longer recommended.': '旧版日语模型 - 不再推荐使用。',
-        'A legacy python code model - use is no longer recommended.': '旧版 Python 代码模型 - 不再推荐使用。',
-        'A legacy model - use is no longer recommended.': '旧版模型 - 不再推荐使用。',
-        'Previously powerful, now legacy model - use is no longer recommended.': '曾经强大的模型，现已作为旧版 - 不再推荐使用。',
-        'Default Preset': '默认预设',
-        'New stories will use the selected preset as a default.': '新故事将默认使用所选预设。',
-        ' will use the selected preset as a default.': ' 将默认使用所选预设。',
-        'will use the selected preset as a default.': '将默认使用所选预设。',
-        'Default AI Module': '默认 AI 模块',
-        'The selected AI Model does not support Modules.': '所选的 AI 模型不支持模块。',
-        'Lorebook Generation Settings': '世界书生成设置',
-        'Change the Model and settings preset used by the Lorebook Generator.': '更改世界书生成器所使用的模型和设置预设。',
-        'Change the model and settings preset used by the Lorebook Generator.': '更改世界书生成器所使用的模型和设置预设。',
-        'Change the Model and settings preset used:': '更改所使用的模型和设置预设：',
-        'Change the model and settings preset used:': '更改所使用的模型和设置预设：',
-        'Change the ': '更改 ',
-        ' and settings preset used by ': ' 及其设置预设，作用于 ',
-        'and settings preset used by ': '及其设置预设，作用于 ',
-        ' and settings preset used by the ': ' 及其设置预设，作用于 ',
-        'and settings preset used by the ': '及其设置预设，作用于 ',
-        'the Lorebook Generator.': '世界书生成器。',
-        'Lorebook Generator': '世界书生成器',
-        'Lorebook Generation Model': '世界书生成模型',
-        'Lore Generation Preset': '世界书生成预设',
-        'Lore Generation': '世界书生成',
-        'Legacy Lore Generation': '旧版世界书生成',
-        'A bespoke module will be used for Lore Generation.': '将为世界书生成使用定制模块。',
-        'A bespoke module will be used for Lore Generator.': '将为世界书生成器使用定制模块。',
-        'A bespoke module will be used for ': '将使用定制模块进行 ',
-        'The less consistent fewshot prompt based Lore Generation will be used.': '将使用一致性较低的、基于 fewshot 提示词的旧版世界书生成。',
-        'The less consistent fewshot prompt based Lore Generator will be used.': '将使用一致性较低的、基于 fewshot 提示词的旧版世界书生成器。',
-        'The less consistent fewshot prompt based Lore ': '一致性较低的基于 fewshot 的旧版世界书',
-        'The less consistent fewshot prompt based Lore': '一致性较低的基于 fewshot 的旧版世界书',
-        'The less consistent fewshot prompt based ': '一致性较低的基于 fewshot 的旧版 ',
-        ' will be used.': ' 将被使用。',
-        'will be used.': '将被使用。',
-        'The module of the selected story will be used for generation if available for the selected model. Arbitrary generation types are not supported.': '如果所选模型支持，将使用所选故事的模块进行生成。不支持任意生成类型。',
-        'Seed': '种子',
-        'Randomize': '随机生成'
+    const config = {
+        stories: GM_getValue('enable_stories', true),
+        image: GM_getValue('enable_image', true)
     };
 
-    const imageTranslationMap = {
-        // --- 生成首张图片后的恭喜提示 ---
-        'Congratulations!': '恭喜！',
-        'You\'ve successfully generated your first NovelAI image!': '您已成功生成了第一张 NovelAI 图像！',
-        'You’ve successfully generated your first NovelAI image!': '您已成功生成了第一张 NovelAI 图像！',
-        'Now let\'s explore how to customize and improve your creations with a quick tutorial.': '现在，让我们通过一个简短的教程来探索如何自定义和改进您的作品。',
-        'Now let’s explore how to customize and improve your creations with a quick tutorial.': '现在，让我们通过一个简短的教程来探索如何自定义和改进您的作品。',
-        'Now let\'s explore how to customize and improve your creations with a quick ': '现在，让我们探索如何自定义和改进您的作品，请看这个简短的',
-        'Now let’s explore how to customize and improve your creations with a quick ': '现在，让我们探索如何自定义和改进您的作品，请看这个简短的',
-        'Now let\'s explore how to customize and improve your creations with a quick': '现在，让我们探索如何自定义和改进您的作品，请看这个简短的',
-        'Now let’s explore how to customize and improve your creations with a quick': '现在，让我们探索如何自定义和改进您的作品，请看这个简短的',
-        'tutorial.': '教程。',
-        'tutorial': '教程',
-        'Start tutorial': '开始教程',
-        'Start Tutorial': '开始教程',
-        'Start ': '开始 ',
-        'I know what I’m doing, skip this!': '我知道该怎么做，跳过此步！',
-        'I know what I\'m doing, skip this!': '我知道该怎么做，跳过此步！',
-        
-        'This website utilizes technologies such as cookies to enable essential site functionality, as well as for analytics, personalization, and targeted advertising.': '本网站使用 Cookie 等技术来实现网站的基本功能，以及进行分析、个性化和有针对性的广告。',
-        'To learn more, view the following link:': '要了解更多信息，请查看以下链接：',
-        'Manage Preferences': '管理偏好',
-        'When you visit websites, they may store or retrieve data about you using cookies and similar technologies ': '当您访问网站时，网站可能会使用 Cookie 和类似技术',
-        '. Cookies may be necessary for the basic functionality of the website as well as other purposes. You have the option of disabling certain types of cookies, though doing so may impact your experience on the website.': '存储或检索有关您的数据。网站的基本功能和其他目的可能都需要 Cookie。您可以选择禁用某些类型的 Cookie，但这样做可能会影响您在网站上的体验。',
-        'Essential': '必要',
-        'Required to enable basic website functionality. You may not disable essential cookies.': '为实现网站基本功能所必需。您不得禁用基本 Cookie。',
-        'View Cookies': '查看 Cookie',
-        'Targeted Advertising': '有针对性的广告',
-        'Used to deliver advertising that is more relevant to you and your interests. May also be used to limit the number of times you see an advertisement and measure the effectiveness of advertising campaigns.  Advertising networks usually place them with the website operator’s permission.': '用于提供与您和您的兴趣更相关的广告。也可用于限制您看到广告的次数和衡量广告活动的效果。广告网络通常在征得网站运营者的同意后投放广告。',
-        'Personalization': '个性化',
-        'Allow the website to remember choices you make ': '允许网站记住您所做的选择',
-        'such as your username, language, or the region you are in': '如您的用户名、语言或您所在的地区',
-        ' and provide enhanced, more personal features. For example, a website may provide you with local weather reports or traffic news by storing data about your general location.': '，并提供更强、更个性化的功能。例如，网站可以通过存储有关您的大致位置的数据，为您提供当地天气预报或交通新闻。',
-        'Analytics': '分析',
-        'Help the website operator understand how its website performs, how visitors interact with the site, and whether there may be technical issues.': '帮助网站运营商了解其网站的运行情况、访客与网站的互动情况以及是否存在技术问题。',
-        'There are issues connecting to the backend right now, please check your connection or try again...': '连接到后台时出现问题，请检查您的连接或重试...',
-        'Welcome to NovelAI!': '欢迎来到 NovelAI！',
-        'Your ': '你的',
-        ' includes:': '包括：',
-        '30 free high quality image generations': '免费生成30张高质量图像',
-        'Full access to our latest model': '我们最新模型的完全访问权限',
-        'No credit card required': '无需信用卡',
-        'Start Free Trial': '开始免费体验',
-        'Create an account and start for free': '创建一个账号开始免费体验',
-        'Sign Up': '注册',
-        'Log In': '登录',
-        'Welcome back!': '欢迎回来！',
-        'Ready to create your first masterpiece': '准备好开始创作您的第一幅杰作了吗',
-        'Register for free and unlock ': '免费注册并解锁',
-        '30 high quality': '30张高质量',
-        ' generations.': '图像生成。',
-        'Already have an account': '已经有账号了吗',
-        'Remember me': '记住我',
-        'Login is remembered for 30 days': '保持登录30天',
-        'Login will not be remembered': '登录不会被记住',
-        'Repeat Password': '确认密码',
-        'Would you like to receive emails about updates from us in the future': '您希望今后收到有关我们更新信息的电子邮件吗',
-        'Reset Password': '忘记密码',
-        'NOTE:': '注意：',
-        'Please take good care of your login credentials. Due to local encryption, losing your email or password results in permanently losing access to your remotely stored stories.': '请妥善保管您的登录凭证。由于数据在本地加密保存，丢失电子邮件或密码将导致永久无法访问远程存储的故事。',
-        'By registering, you agree to consent to the NovelAI ': '注册即表示您同意 NovelAI ',
-        'Privacy Policy and Terms of Service': '隐私政策和服务条款',
-        'This site is protected by reCAPTCHA and the Google': '本网站受 reCAPTCHA 保护， Google ',
-        'Privacy Policy': '隐私政策',
-        'Terms of Service': '服务条款',
-        'apply.': '适用。',
-        'History': '历史记录',
-        'Click on an image to set your settings to the ones used to generate it': '左键点击图像可以快速应用生成该图像时的原始设置',
-        'except for any init image': '种子和原始图像不会被复制',
-        'Delete this image': '确定要删除这张图片吗',
-        'Delete it': '确认删除',
-        'No, keep it': '不，取消',
-        'Download ZIP': '打包下载全部图片',
-        'Download all images': '确定要下载所有图像吗',
-        ' This could take a while, or fail entirely, with large numbers of images.': '如果图像数量较多，可能会需要一些时间，或导致下载失败。',
-        'Downloading': '正在下载',
-        'images...': '张图片...',
-        'Images downloaded': '图片已开始下载',
-        'Author': '作者',
-        'Anonymous Trial': '游客试用',
-        'Not Subscribed': '未订阅',
-        'End Session': '结束会话',
-        'Quick Start Gallery': '快速上手图库',
-        'Director Tools': '导演工具',
-        'Help': '帮助',
-        'Tutorial': '教程',
-        'Documentation': '文档',
-        'Version ': '版本 ',
-        'Get Started': '让我们开始吧',
-        'Get Inspiration from our quick start gallery!': '从我们的快速上手图库中获取灵感！',
-        'Click an image to copy the prompt.': '点击图片以复制提示词。',
-        'Copied!': '已复制！',
-        'New': '新增',
-        'A version of our newest model trained on a curated subset of images. Recommended for streaming.': '我们最新模型的一个版本，建议用于流式传输。',
-        'Our newest and best model.': '我们最新、最好的模型。',
-        'Legacy': '旧版',
-        'Our V4 model trained on a curated subset of images. No longer recommended for use.': '我们V4模型的一个版本。不再推荐使用。',
-        'Our V4 model. No longer recommended for use.': '我们的V4模型。不再推荐使用。',
-        'Our previous model. No longer recommended for use.': '我们以前的模型。不再推荐使用。',
-        'One of our older models. No longer recommended for use.': '我们以前的模型之一。不再推荐使用。',
-        'Prompt': '提示词',
-        'You are currently using Anime mode.': '您当前使用的是动漫模式。',
-        'The mode changes the tag suggestions and adds a dataset tag to the prompt. You can click the icon to switch.': '切换模式会更改Tag建议，并在提示中添加数据集Tag。',
-        'You are currently using Furry mode.': '您当前使用的是Furry模式。',
-        'Randomize': '随机生成',
-        'Random Prompt': '随机提示词',
-        'Added to the end of the prompt:': '会在输入的提示词结尾添加以下提示词：',
-        'Undesired Content': '负面提示词',
-        'Reattach Undesired Content': '拼接负面提示词',
-        'Detach Undesired Content': '拆分负面提示词',
-        'Added to the beginning of the UC:': '会在输入的负面提示词前面添加以下提示词：',
-        'This prompt is using ': '输入的部分占',
-        ' of the currently used ': '个Token，共使用了',
-        ' tokens. Max total tokens: ': '个。该部分最大Token数：',
-        'Prompt Settings': '提示词设置',
-        'Add Quality Tags': '添加质量优化Tag',
-        'The prompt will be used unmodified.': '不会修改提示词。',
-        'Tags to increase quality will be prepended to the prompt.': '会在提示词中添加能够提高质量的Tag。',
-        'Undesired Content Preset': '负面提示词预设',
-        'Heavy': '全面',
-        'Light': '精简',
-        'Human Focus': '以人为本',
-        'None': '无',
-        'Disable Tag Suggestions': '禁用Tag建议',
-        'Highlight Emphasis': '高亮强调部分',
-        'Add a Base Img': '上传基准图片',
-        'Optional': '可选',
-        'What do you want to do with this image': '您想要怎样处理这张图片',
-        'Image2Image': '图生图',
-        'Transform your image.': '改变您的图片。',
-        'Strength': '强度',
-        'Noise': '噪声',
-        'Inpaint Image': '重绘图像',
-        'This image has metadata': '这张图片带有元数据',
-        'Did you want to import that instead': '您想要怎样导入它',
-        'Characters': '角色',
-        'Append': '附加',
-        'Import Metadata': '导入元数据',
-        'Clean Imports': '清除增益',
-        'Remove': '移除',
-        ', add spaces after commas': '，在逗号后添加空格',
-        'Character Prompts': '角色提示词',
-        'Customize separate characters.': '自定义每个角色。',
-        'Click to edit a character.': '点击以编辑一个角色。',
-        'Clear Random Prompt Characters': '清除随机提示词角色',
-        'Add Character': '添加角色',
-        'Female': '女性',
-        'Male': '男性',
-        'Character': '角色',
-        'Position': '位置',
-        'AI’s Choice': '由AI决定',
-        'Character Positions': '角色位置',
-        'Global': '全局',
-        'Set Character ': '调整角色',
-        '’s Position': '的位置',
-        'Done': '完成',
-        'Vibe Transfer': '氛围转移',
-        'Change the image, keep the vision.': '改变图像，保留视觉。',
-        'Use a variety of AI tools to edit your images.': '使用各种AI工具编辑你的图像。',
-        'Normalize Reference Strength Values': '标准化参考强度值',
-        'Imported': '已导入',
-        'Vibe Transfer reference image': '张氛围转移参考图片',
-        'Enable/Disable Vibe Transfer Reference Image': '启用/禁用氛围转移参考图片',
-        'Reference Strength': '参考强度',
-        'Information Extracted': '信息提取度',
-        'Encoding required. This will cost': '需要编码。这将使下一次生成的成本增加',
-        'on the next generation.': '。',
-        'Learn more here.': '点击此处了解更多信息。',
-        'Image Settings': '图像设置',
-        'Normal': '中等尺寸',
-        'Large': '大型尺寸',
-        'Wallpaper': '壁纸（特大尺寸）',
-        'Small': '小型尺寸',
-        'Custom': '自定义',
-        'Portrait': '竖向',
-        'Landscape': '横向',
-        'Square': '方形',
-        'Number of Images': '生成数量',
-        'Reset Settings': '重置设置',
-        'Reset all settings to default': '确实要恢复所有设置为默认状态吗',
-        'Yes': '确定',
-        'Steps': '步数',
-        'Guidance': '引导值',
-        'Prompt Guidance': '提示词引导值',
-        'Variety': '多样性',
-        'Enable guidance only after body has been formed, to improve diversity and saturation of samples. May reduce relevance.': '只应在身体形成后再启用引导功能，可以提高样本的多样性和饱和度。可能会降低相关性。',
-        'Seed': '种子',
-        'Sampler': '采样器',
-        'Recommended': '推荐',
-        'Advanced Settings': '高级设置',
-        'Prompt Guidance Rescale': '缩放提示词引导值',
-        'Noise Schedule': '噪声计划表',
-        'N/A': '随机',
-        'Free Trial': '免费体验',
-        'image generations remaining.': '张图片可生成。',
-        'Seen enough': '没用够吗',
-        'Check out our plans': '查看我们的计划',
-        'Generate 1 Image': '生成1张图像',
-        'Generate 2 Images': '生成2张图像',
-        'Generate 3 Images': '生成3张图像',
-        'Generate 4 Images': '生成4张图像',
-        'You are not subscribed!': '你还没有开通订阅！',
-        'Take me there': '带我去开通',
-        'The paint’s run dry.': '颜料已经干了。',
-        'You need a subscription or to purchase Anlas to continue.': '您需要订阅或购买Anlas才能继续使用。',
-        'Compare and pick the right plan for you.': '比较并选择适合您的计划。',
-        'Explore': '探索',
-        'Our Plans': '我们的计划',
-        '/mo': '/月',
-        'Unlimited Images': '无限图片',
-        'Image Gen Access': '图片生成权限',
-        'Access to our image generation features.': '能够使用我们的图像生成功能。',
-        'Pay As You Go': '按量付费',
-        'Unlimited': '无限',
-        'Purchase Discount': '购买折扣',
-        'The amount taken off our on-demand Anlas pricing.': '在额外购买按量付费的Anlas时享受折扣。',
-        'Discount': '折扣',
-        'Bonus': '奖励',
-        'Free extra monthly currency for use in generating images on NovelAI.': '每月免费提供用于在NovelAI上生成图片的货币。',
-        'For images of up to 1024x1024 pixels and up to 28 steps when generating a single image.': '适用于生成单幅最大1024x1024像素、最多28步数的图像。',
-        'A pool of Anlas that refills each month to the amount for your subscription tier. It will only refill if you have less than the amount for your subscription tier.': 'Anlas会在每次订阅续费时按照您的层级充值。只有当您剩余的Anlas少于赠送数量时才会被重新充值。',
-        'Activate a Gift Key': '激活礼品码',
-        'Anlas are a form of digital currency used to enhance your image generation experience for things like higher resolutions, faster generation times, and more.': 'Anlas 是一种用于增强图像生成体验的货币，如更高分辨率、更快的生成时间等。',
-        ' images†': '张图片†',
-        '† At the default resolution and settings.': '†使用默认分辨率和设置。',
-        'Purchase ': '购买 ',
-        'Here you can purchase additional Anlas for training your AI Modules and for Image Generation.': '您可以在这里购买额外的Anlas，用于训练你的AI模块或生成图像。',
-        'Subscription Anlas will be refilled according to your subscription every month.': '订阅Anlas会在每次订阅续费时按照您的层级充值。',
-        'The discounted Anlas pricing does not undefinedto accounts with canceled or non-renewing subscriptions.': '订阅已取消或已过期的帐户不能享受Anlas折扣。',
-        'Your Subscription Anlas:': '您的订阅Anlas：',
-        'Your Paid Anlas:': '您的付费Anlas：',
-        'Stream Image Generation': '流式图像生成',
-        'Intermediates of generating images will be streamed.': '流式传输生成图像的过程。',
-        'Intermediates of generating images will not be streamed.': '生成图像的过程不会被传输。',
-        'Show Streamed Images Unprocessed': '显示未完成的流式图像',
-        'All streamed images will be shown unprocessed.': '显示流式传输生成图像的所有步骤。',
-        'In progress streamed images will be blurred and the first few steps will not be shown.': '生成中的流式传输图像将变得模糊，并且不会显示最初的几个步骤。',
-        'Automatic Download': '自动下载',
-        'Images will automatically download after generation.': '图像生成完后将自动下载。',
-        'Images will not automatically download after generation.': '图像生成完后不会自动下载。',
-        'Your subscription expired on ': '你的订阅已结束于',
-        'Your subscription ends on ': '你的订阅将在',
-        ' and does not renew.': '到期且不会续订。',
-        'Download All Stories': '下载所有故事',
-        'Gift Key ': '礼品码',
-        'Purchasing Disabled': '购买已禁用',
-        'Gift key purchases have been removed indefinitely due to abuse.': '由于遭到滥用，购买礼品码已被无限期禁用。',
+    GM_registerMenuCommand(`[${config.stories ? '√' : '×'}] Stories (故事) 翻译`, () => {
+        GM_setValue('enable_stories', !config.stories);
+        location.reload();
+    });
 
-        // ================= Director Tools (导演工具) =================
-        'Remove backgrounds from images, leaving only the characters.': '移除图像背景，仅保留角色。',
-        'Remove Background': '移除背景',
-        'Remove...': '移除...',
-        'Line Art': '线稿',
-        'Sketch': '草图',
-        'Colorize': '上色',
-        'Emotion': '表情',
-        'Declutter': '清理',
-        'Transform': '转换',
-        'Invalid': '无效',
-        'Draw an outline of your image.': '绘制图像的轮廓。',
-        'Revert your image to a sketch stage.': '将图像还原为草图阶段。',
-        'Turn your sketch or line art picture into something colorful. You can also guide your colorization with a prompt and even make slight modifications to the image.': '将草图或线稿变成彩图。您还可以使用提示词引导上色，甚至对图像进行轻微修改。',
-        'Removes clutter like text, speech bubbles or other things drawn on top of the image.': '移除杂乱元素，如文本、对话气泡或其他画在图像上的内容。',
-        'Defry': '画质修复',
-        'Prompt (Optional)': '提示词 (可选)',
-        'Anime Only. Start with a neutral emotion image. ': '仅限动漫。请从表情中性的图像开始。 ',
-        'Anime Only. Start with a neutral emotion image.': '仅限动漫。请从表情中性的图像开始。',
-        'Learn More': '了解更多',
-        'Neutral': '中立',
-        'Change the expression of any given character.': '更改任意指定角色的表情。',
-        'Quality Tags Enabled': '已启用质量优化标签',
-        'Add a Base Img (Optional)': '添加基础图像 (可选)',
-        'Precise Reference': '精准参考',
-        'Add a reference image for a character or style.': '为角色或风格添加参考图像。',
-        'Normal Landscape': '中等尺寸 (横向)',
-        'Normal Portrait': '中等尺寸 (竖向)',
-        'Normal Square': '中等尺寸 (方形)',
-        'Large Landscape': '大型尺寸 (横向)',
-        'Large Portrait': '大型尺寸 (竖向)',
-        'Large Square': '大型尺寸 (方形)'
-    };
+    GM_registerMenuCommand(`[${config.image ? '√' : '×'}] Image (图像) 翻译`, () => {
+        GM_setValue('enable_image', !config.image);
+        location.reload();
+    });
 
-    const inspectTranslationMap = {
-        'Click the upload button or drag an image into the window to check its metadata.': '点击上传按钮或将图片拖入窗口以检视其元数据。',
-        'Upload Image': '上传图像',
-        'This image contains no metadata.': '这张图片没有元数据。',
-        'Title': '标题',
-        'Description': '提示词',
-        'Software': '软件',
-        'Source': '模型',
-        'Request Type': '请求类型',
-        'Text to Image': '文生图',
-        'Image to Image': '图生图',
-        'Simplified': '简略',
-        'Prompt': '提示词',
-        'Undesired Content': '负面提示词',
-        'Resolution': '分辨率',
-        'Steps': '步数',
-        'Prompt Guidance': '提示词引导值',
-        'Prompt Guidance Rescale': '缩放提示词引导值',
-        'Undesired Content Strength': '负面提示词强度',
-        'Raw Parameters': '原始参数',
-    };
-
-    const storiesTranslationMap = {
-        // --- 快捷键汉化补全 (来自 3.25) ---
-        'Toggle Menu Bar': '切换菜单栏',
-        'Toggle Info Bar': '切换信息栏',
-        'Toggle Bars': '切换侧边栏',
-        'Focus Editor': '聚焦编辑器',
-        'Request AI Generation': '请求 AI 生成',
-        'Cancel AI Generation': '取消 AI 生成',
-        'Focus Input Field': '聚焦输入框',
-        'Redo': '重做',
-        'Open Redo List': '打开重做列表',
-        'Undo': '撤销',
-        'Retry AI Generation': '重试 AI 生成',
-        'Open Lorebook': '打开世界书',
-        'Open Context Viewer': '打开上下文查看器',
-        'Open User Scripts Modal': '打开用户脚本菜单',
-        'Open Tokenizer': '打开分词器',
-        'Open Token Probabilities': '打开 Token 概率',
-        'Toggle Editor Token Probabilities': '切换编辑器 Token 概率',
-        'Close Modal': '关闭弹窗',
-        'Toggle Input Box': '切换底部输入框',
-        'Toggle Highlighting': '切换高亮显示',
-        'Toggle Spellcheck': '切换拼写检查',
-        'Create New Story': '创建新故事',
-        'Reset Theme': '重置主题',
-        'Delete Current Story': '删除当前故事',
-        'Stop TTS': '停止语音播报',
-        'Toggle Bold': '切换加粗',
-        'Toggle Italic': '切换斜体',
-        'Toggle Underline': '切换下划线',
-        'Toggle Strikethrough': '切换删除线',
-
-        // --- 悬浮操作按钮与小贴士 ---
-        'Find in Story': '在故事中查找',
-        'Token Probabilities': 'Token 概率',
-        'Turn off Tips?': '关闭小贴士？',
-        'Are you sure you want to disable tips for this session?': '您确定要在此会话中禁用小贴士吗？',
-        'You can re-enable or permanently turn off tips in the ': '您可以在此处重新启用或永久关闭小贴士：',
-        'You can re-enable or permanently turn off tips in the': '您可以在此处重新启用或永久关闭小贴士：',
-        'Interface Settings.': '界面设置。',
-        'Turn off Tips for this session': '在此会话中关闭小贴士',
-        'I changed my mind.': '我改变主意了。',
-
-        // --- 修复未选择时的碎片化提示 ---
-        'No Entry selected.': '未选择条目。',
-        'Select an Entry from the left to edit it.': '从左侧选择一个条目进行编辑。',
-        'No Category selected.': '未选择分类。',
-        'Select a Category from the left to edit it.': '从左侧选择一个分类进行编辑。',
-
-        // --- 生成器 (Generator) ---
-        'Add Context (advanced)': '添加上下文 (高级)',
-        'Include Memory, Author\'s Note, the most recent story text (~2500 characters), or other Lorebook entries in context so that information can be used in generating entries.': '在上下文中包含记忆库、作者留言、最近的故事正文（约 2500 字符）或其他世界书条目，以便在自动生成设定时参考这些信息。',
-        'Influences the generator towards generating a specific type of entry. A custom type can be set by typing with the dropdown open and hitting enter.': '引导生成器生成特定类型的条目。可以在下拉菜单打开时直接打字并按回车键来设置自定义类型。',
-        'This is where you put what you want to be generated. Proper nouns like "Geometry Incorporated" or short descriptions like "an enthusiastic merchant" work best.': '在这里输入你想要生成的内容。建议使用专有名词（如“几何公司”）或简短的描述（如“热情的商人”），效果最佳。',
-        'You can add tags in parenthesis to further describe the entry, e.g. "Stalagmal (prison, space)"': '你可以在括号中添加标签来进一步描述该条目，例如 "Stalagmal (prison, space)"。',
-        'Always evaluates to true': '始终判断为真',
-
-        'Generation Type': '生成类型',
-        'Input Text': '输入文本',
-        'Generate >': '生成 >',
-        'Generate': '生成', // 修复独立图标按钮
-        'Generation History': '生成历史',
-        'General': '通用',
-        'Person': '人物',
-        'Place': '地点',
-        'Thing': '物品',
-        'Life': '生物',
-        'Faction': '派系',
-        'Role': '身份',
-        'Concept': '概念',
-
-        // 右键菜单与特殊字符
-        'Cut': '剪切',
-        'Copy': '复制',
-        'Paste': '粘贴',
-        'Special Character': '特殊字符',
-        'Find': '查找',
-        'Add to...': '添加到...',
-        'Generate Inline': '行内生成',
-        'Writer\'s Toolbox': '作家工具箱',
-        'Tokenize': '查看 Token 分词',
-        'Screenshot': '网页截图',
-        'Speak with TTS': '使用 TTS 朗读',
-        'Hint: Ctrl + Right-Click to open the regular browser context menu.': '提示：按住 Ctrl + 右键单击 可打开浏览器默认菜单。',
-        'LitRPG game text': 'LitRPG 游戏文本',
-        'quotations/excerpts': '引用 / 摘录',
-        'poetry/lyrics': '诗歌 / 歌词',
-        'scene/chapter break': '场景 / 章节分隔',
-        '" " (En Space)': '" " (En 空格)',
-        '"  " (Em Space)': '"  " (Em 空格)',
-        '• (Bullet)': '• (项目符号)',
-        '… (Ellipsis)': '… (省略号)',
-        '— (Em Dash)': '— (破折号)',
-        '*** (Dinkus)': '*** (章节分隔符)',
-        '⁂ (Asterism)': '⁂ (星号组合)',
-        'New Lore Entry as Text': '作为正文创建新条目',
-        'New Lore Entry as Key': '作为关键词创建新条目',
-        
-        // 行内工具栏碎句
-        'Transform': '转换',
-        'Expand': '扩写',
-        'Condense': '精简',
-        'Rewrite Style': '重写风格',
-        'Rewrite Style by ': '重写风格：',
-        'Rewrite Style by': '重写风格：',
-        'Custom': '自定义',
-        ' by ': '：',
-        ' by': '：',
-        'by ': '：',
-        'by': '：', 
-        'Expand by ': '扩写：',
-        'Expand by': '扩写：',
-        'Condense by ': '精简：',
-        'Condense by': '精简：',
-        'Make the text ': '让文本变得 ',
-        'Make the text': '让文本变得',
-        'not much': '不多',
-        'a little': '稍微',
-        'kinda': '有点',
-        'quite a bit': '不少',
-        'a lot': '大量',
-        'very': '非常',
-        'Enter a term': '输入词汇',
-        'Adjust >': '调整 >',
-        'Rewrite to match the style.': '重写以匹配此风格。',
-        'Enter a custom instruction.': '输入自定义指令。',
-
-        // 设置与提示 (结合3.25与3.30优势)
-        'AI Responses': 'AI 响应',
-        'Stream AI Responses': '流式传输 AI 响应',
-        'AI responses will be streamed, appearing token by token.': 'AI 的响应将以流式传输，逐字呈现在屏幕上。',
-        'Text will appear all at once when generation has finished.': '生成完成后，文本将一次性全部显示。',
-        'Continue Response to End of Sentence': '续写至句末',
-        'Responses will attempt to continue until the end of a sentence is found.': '生成响应时会尝试一直续写，直到找到一个完整的句子结尾。',
-        'Responses will end normally.': '响应将正常结束（不会强制续写至句末）。',
-        'Streamed Response Delay': '流式响应延迟',
-        'Hypebot': '气氛组机器人',
-        'Comment Output': '评论输出模式',
-        'Comment Avatar': '评论者头像',
-        'Auto-Select': '自动选择',
-        'Comment Chance': '评论概率',
-        'Comment Streamed Response Delay': '评论流式响应延迟',
-        'Preamble': '预引导词',
-        'The context will have a small preamble prepended to improve generations on low context. The exact behaviour varies per model.': '在文本内容较少的情况下，会在发送给 AI 的上下文前添加一小段预引导词以改善生成质量。具体效果因模型而异。',
-        'The context will not have a preamble prepended.': '上下文前将不会添加预引导词。',
-        'Default Bias': '默认概率偏移',
-        'A default bias will be applied, reducing the likelihood of dinkus (***) and asterism (⁂) to be generated.': '系统将应用默认的概率偏移，降低 AI 生成章节分隔符 (***) 和星号组合 (⁂) 的可能性。',
-        'No default bias will be applied.': '不会应用默认概率偏移。',
-        'A bias of zero will have no effect.': '偏移量为 0 时不会产生任何影响。',
-        'Enable Token Probabilities': '启用 Token 概率',
-        'Token probabilities will not be returned with generation requests.': '生成请求将不会在后台返回 Token 概率数据。',
-        'Text Settings': '文本排版设置',
-        'Interface Font Size': '界面字体大小',
-        'Output Font Size': '正文字体大小',
-        'Line Spacing': '行距',
-        'Paragraph Indent': '段落首行缩进',
-        'Paragraph Spacing': '段落间距',
-        'Button Scale': '界面按钮缩放比例',
-        'Max Line Width': '正文最大显示宽度',
-        'Interaction Settings': '交互设置',
-        'Gesture Controls': '触控手势控制',
-        'Swiping on touch devices will open and close the sidebars.': '在触屏设备上左右滑动可打开或关闭两侧的边栏。',
-        'Gesture controls are disabled.': '触控手势控制已禁用。',
-        'Swap Context Menu Controls': '反转右键菜单控制',
-        'Right click will open the NAI context menu. Ctrl+right click will open the standard context menu.': '点击右键将打开 NovelAI 专属菜单。按住 Ctrl+右键 单击将打开浏览器标准菜单。',
-        'Right click will open the standard context menu. Ctrl+right click will open the NAI context menu.': '右键单击将打开标准上下文菜单。按住 Ctrl+右键单击将打开 NAI 专属菜单。',
-        'Other Settings': '其他设置',
-        'Input Box': '底部输入框',
-        'The input box is hidden.': '隐藏底部的默认输入框。',
-        'The input box is visible.': '底部输入框可见。',
-        'Editor Highlighting': '编辑器文本高亮',
-        'Text in the editor will be highlighted based on origin.': '编辑器中的文本将根据来源（你写的/AI写的）以不同颜色高亮显示。',
-        'Text in the editor will not be highlighted.': '编辑器中的文本将不会高亮显示。',
-        'Editor Spellcheck': '编辑器拼写检查',
-        'Spellcheck is enabled in the editor (on supported browsers)': '在编辑器中启用浏览器自带的拼写检查功能。',
-        'Spellcheck is disabled in the editor.': '编辑器中的拼写检查已禁用。',
-        'Context Viewer Colors': '上下文查看器着色',
-        'Text in the context viewer will be color coded based on origin.': '上下文查看器里的文本将根据来源着色。',
-        'Text in the context viewer will use the default color.': '上下文查看器中的文本将使用默认颜色。',
-        'Editor Lorebook Keys': '编辑器世界书关键词提示',
-        'No special styling will be applied to Lorebook keys in the editor.': '在编辑器中，不对触发了世界书设定的关键词应用特殊高亮样式。',
-        'Keys of currently active Lorebook entries will be bolded in the editor. Disabling this setting may improve performance on very large stories or stories with large Lorebooks.': '当前激活的世界书条目关键词将在编辑器中加粗显示。禁用此项可提升性能。',
-        'Show Story Title': '显示故事标题',
-        'The story title will be shown above the editor.': '故事标题将固定显示在编辑器正上方。',
-        'The story title will not be shown above the editor.': '故事标题将不会显示在编辑器上方。',
-        'Show Tips': '显示小贴士',
-        'Tips will be shown below the editor.': '使用小贴士将显示在编辑器下方。',
-        'Tips will not be shown.': '小贴士将不会显示。',
-        'Show Editor Toolbar': '悬停编辑工具栏',
-        'A toolbox with options to change text formatting and more will appear when selecting text in Editor V2.': '在 V2 版本编辑器中选中文本时，将自动弹出一个用于更改文本格式的快捷工具栏。',
-        'Selecting text in Editor V2 will not open the toolbox to change text formatting and more.': '在 V2 版本编辑器中选中文本不再弹出格式更改工具栏。',
-        'Auto Format Text': '自动格式化文本',
-        'Text—both user and generated—will be automatically formatted in the editor.': '编辑器中的文本将被自动排版格式化。',
-        'Text—both user and generated—will not be automatically formatted in the editor.': '用户和生成的文本都不会在编辑器中自动格式化。',
-        'Keyboard Displaces Content': '键盘推挤页面内容',
-        'The onscreen keyboard of some mobile devices will displace the content of the page.': '在某些移动设备上，唤出屏幕键盘时会往上推挤页面内容。',
-        'The onscreen keyboard of some mobile devices will overlay the content of the page.': '某些移动设备的屏幕键盘将覆盖在页面内容之上（而非推挤）。',
-        'Paragraph Visibility Range': '段落渲染可见范围',
-        'Paragraphs scrolled out-of-view past the set range will be unloaded in Editor V2. This improves editing performance especially with larger stories.': '在 V2 版本编辑器中，滚动出设定范围的段落将被从内存中卸载。这能大幅提高编辑超长篇故事时的网页流畅度。',
-        'Highlight Speech': '高亮对话内容',
-        'Choose if speech (text between quotation marks) in the editor should be highlighted in italic and slightly less opaque. When choosing Inverted, non-speech is shown in italic and slightly less opaque instead.': '选择是否将编辑器中的角色对话以斜体并降低透明度高亮显示。选择“反转”则高亮非对话部分。',
-        'Only available in Editor V2.': '仅在使用 V2 版本编辑器时生效。',
-        'Show Identicon': '显示默认生成头像',
-        'A theme-specific default avatar will be shown for your account.': '将为你未设置头像的账号显示一个特定主题的默认头像。',
-        'A unique identicon will be shown for your account.': '将为您的账号显示一个独特的随机头像。',
-        'Show Minibar (Desktop Only)': '显示迷你状态栏（仅限电脑端）',
-        'The minibar will not be displayed.': '底部的迷你状态栏将不会显示。',
-        'The minibar will display on the left side of the screen.': '迷你状态栏将显示在屏幕左侧。',
-        'Clear Comments': '清除评论',
-        'Automatically clear comments on generating story text.': '生成故事文本时自动清除评论。',
-
-        // 首页及基础文本
-        'Start your first Story': '开始你的第一个故事',
-        'Continue a Story': '继续创作',
-        'Continue a ': '继续',
-        'Visualize your favorite characters.': '将你最爱的角色具象化。',
-        'Image Generator': '图像生成器',
-        'Generate Anime and Furry imagery with our SOTA image gen model!': '使用我们最先进的模型生成二次元和Furry图像！',
-        'Director Tools': '导演工具',
-        'Use a variety of AI tools to edit your images.': '使用各种 AI 工具来编辑你的图像。',
-        'Last Edited: ': '最后编辑：',
-        'A text adventure is an interactive quest, where you have to use Do or Say to interact with the world.': '文字冒险是一个互动的任务，你必须使用“行动”或“说话”与世界互动。',
-        'Write alongside the AI to flesh out your writing and ideas.': '与 AI 一同写作，充实你的文笔与创意。',
-        'Begin an AI-generated quest using words and actions.': '通过语言和行动，展开一场 AI 生成的冒险之旅。',
-        'Let\'s start writing!': '让我们开始创作吧！',
-        'Let’s start writing!': '让我们开始创作吧！',
-        'Select an option to continue.': '选择一个选项以继续。',
-        'Can\'t think of any ideas? Pick one of ours to get started.': '暂时没有头绪？从我们的预设中选一个开始吧。',
-        'Can’t think of any ideas? Pick one of ours to get started.': '暂时没有头绪？从我们的预设中选一个开始吧。',
-        'Can\'t think of any ideas? ': '暂时没有头绪？',
-        'Can’t think of any ideas? ': '暂时没有头绪？',
-        'Can\'t think of any ideas?': '暂时没有头绪？',
-        'Can’t think of any ideas?': '暂时没有头绪？',
-        'Pick one of ours to get started.': '从我们的预设中选一个开始吧。',
-        'Use the browser below to select a scenario that tickles your fancy, you\'ll be able to view the contents before starting.': '在下方浏览并选择一个让你心动的场景，开始前可以先预览具体内容。',
-        'Use the browser below to select a scenario that tickles your fancy, you’ll be able to view the contents before starting.': '在下方浏览并选择一个让你心动的场景，开始前可以先预览具体内容。',
-        'To view information about this Scenario, click here.': '查看关于此场景的信息，请点击这里。',
-        'Start Scenario': '开始场景',
-        'Shuffle': '换一批',
-        'Generate Images': '生成图像',
-        'This scenario has no steps.': '这个场景还没有文本生成。',
-        'This shelf is empty.': '这个书架是空的。',
-        'Your Stories': '你的故事',
-        'New Shelf': '新建书架',
-        ' Stories': ' 个故事',
-        '+ New Story': '+ 新建故事',
-        'Import File': '导入文件',
-        'New Story': '新建故事',
-        'Enter your prompt here...': '在此处输入你的正文或提示词...',
-        'Send >': '发送 >',
-        'Send': '发送', 
-        'What do you want to do?': '你想做什么？',
-        'What do you want to say?': '你想说什么？',
-        'DO': '行动',
-        'SAY': '说话',
-        'Story': '故事',
-        'Advanced': '高级',
-        'Story Mode': '故事模式',
-        'Storyteller': '小说创作',
-        'Text Adventure': '文字冒险',
-        'AI Model': 'AI 模型',
-        'Change Default': '更改默认',
-        'Config Preset': '配置预设',
-        'Edit Preset': '编辑预设',
-        'Changes the settings of the AI model.': '更改当前 AI 模型的生成参数。',
-        'Editor Token Probabilities': '编辑器 Token 概率',
-        'Enable to show selectable alternate tokens and probabilities in the editor.': '启用后，在编辑器中显示 AI 的备选词及概率。',
-        'Memory': '记忆库',
-        'The AI will better remember info placed here.': 'AI 会牢记放置在这里的背景设定。',
-        ' tokens': ' 个 Token',
-        'Author\'s Note': '作者留言',
-        'Info placed here will strongly influence AI output.': '此处的文字将强力干预 AI 的后续生成。',
-        'Lorebook Quick Access': '世界书快速检索',
-        'Search for an entry': '搜索世界书条目...',
-        'Story Options': '故事选项',
-        'View Story Stats': '查看故事数据统计',
-        'Remote Storage': '云端同步存储',
-        'Story is currently stored locally. Locally stored stories may be deleted by your browser after a period of non-use.': '当前故事仅保存在本地。',
-        
-        // --- Remote Storage 模态弹窗及碎句补全 ---
-        'Your account is set to store stories only on your local device. Local storage is not meant to be persistent, and a loss of your stories can occur for a number of reasons and at any time.': '您的账号设置为仅在本地设备上存储故事。本地存储并非永久性存储，在任何时候都可能因各种原因导致故事丢失。',
-        'Your account is set to store stories ': '您的账号设置为将故事',
-        'only on your local device.': '仅限本地设备。',
-        'only on your local device': '仅限本地设备',
-        ' only on your local device.': ' 仅限本地设备。',
-        ' only on your local device': ' 仅限本地设备',
-        '. Local storage is not meant to be persistent, and a loss of your stories can occur for a number of reasons and at any time.': '。本地存储并非永久性存储，在任何时候都可能因各种原因导致故事丢失。',
-        ' Local storage is not meant to be persistent, and a loss of your stories can occur for a number of reasons and at any time.': ' 本地存储并非永久性存储，在任何时候都可能因各种原因导致故事丢失。',
-        'Local storage is not meant to be persistent, and a loss of your stories can occur for a number of reasons and at any time.': '本地存储并非永久性存储，在任何时候都可能因各种原因导致故事丢失。',
-        'We recommend storing your stories on our servers. They are locally encrypted and inaccessible to anyone but you. This setting can also be changed for each story individually.': '我们建议您将故事存储在我们的服务器上。它们在本地加密，除您之外的任何人均无法访问。此设置也可在各个故事的设置中单独更改。',
-        'We recommend storing your stories on our servers.': '我们建议您将故事存储在我们的服务器上。',
-        ' They are locally encrypted and inaccessible to anyone but you. This setting can also be changed for each story individually.': '它们将在本地加密，除您之外的任何人均无法访问。此设置也可在各个故事中单独更改。',
-        'Switch to Remote Storage': '切换至云端同步存储',
-        'Keep Local Storage': '保持本地存储',
-        
-        'Make sure to export and manually back up your stories if you store them locally. You can export all stories in the Account Settings. Switching to remote storage does not move existing stories to our servers automatically, this can be changed in each stories settings individually.': '如果使用本地存储，请务必导出并手动备份您的故事。您可以在账号设置中导出所有故事。切换到云端同步存储不会自动将现有故事移动到服务器上，此操作需要在每个故事的设置中单独进行更改。',
-        'Make sure to export and manually back up your stories if you store them locally. ': '如果使用本地存储，请务必导出并手动备份您的故事。',
-        'Make sure to export and manually back up your stories if you store them locally.': '如果使用本地存储，请务必导出并手动备份您的故事。',
-        'You can export all stories in the ': '您可以在',
-        'You can export all stories in the': '您可以在',
-        '. Switching to remote storage does not move existing stories to our servers automatically, this can be changed in each stories settings individually.': '中导出所有故事。切换到云端同步存储不会自动将现有故事移动到服务器上，此操作需要在各个故事的设置中单独进行更改。',
-        ' Switching to remote storage does not move existing stories to our servers automatically, this can be changed in each stories settings individually.': '切换到云端同步存储不会自动将现有故事移动到服务器上，此操作需要在各个故事的设置中单独进行更改。',
-        'Switching to remote storage does not move existing stories to our servers automatically, this can be changed in each stories settings individually.': '切换到云端同步存储不会自动将现有故事移动到服务器上，此操作需要在各个故事的设置中单独进行更改。',
-
-        'Export Story': '导出故事',
-        'To File': '导出为文件',
-        'As Scenario': '导出为场景',
-        'As Plaintext': '导出为纯文本',
-        'To Clipboard': '复制到剪贴板',
-        'As Image': '导出为长图',
-        'Delete Story': '删除当前故事',
-        '(cannot be undone)': '删除后无法恢复',
-        'Delete': '删除',
-        'Context': '上下文',
-        'Last Context': '上次上下文',
-        'Current Context': '当前上下文',
-        'Context Viewer': '上下文查看器',
-        'Get a full view of what’s sent to the AI.': '全面查看发送给 AI 的所有内容。',
-        'Get a full view of what\'s sent to the AI.': '全面查看发送给 AI 的所有内容。',
-        
-        // --- 系统提示词 ---
-        'Edit System Prompt': '编辑系统提示词',
-        'System Prompt': '系统提示词',
-        'The system prompt is the initial system message given to the model. Leave blank for the default system message.': '系统提示词是提供给模型的初始系统消息。留空则使用默认系统消息。',
-        'Reset to Default': '恢复默认',
-        'Copy Default': '复制默认',
-        'Prefill': '预填充',
-        'The prefill is inserted at the beginning of the most recent assistant message. Leave blank to use the default prefill.': '预填充将插入到最新一条助手消息的开头。留空则使用默认预填充。',
-        
-        'User Scripts': '用户脚本',
-        'Extend NovelAI with custom scripts.': '使用自定义脚本来扩展 NovelAI 的功能。',
-        'Edit User Scripts': '编辑自定义脚本',
-        'Logit Bias': '词汇概率干预',
-        'Export': '导出',
-        'Weigh the AI\'s chance of generating specific tokens.': '人为干预 AI 生成特定词汇的概率。',
-        'Weigh the AI’s chance of generating specific tokens.': '人为干预 AI 生成特定词汇的概率。',
-        'Type in the area below, then press enter to save.': '在下方输入想干预的词，然后按回车键保存。',
-        'Enter the text you want to bias': '输入文本...',
-        'Bias: ': '概率偏移: ',
-        'Default: ': '默认: ',
-        'LESS': '降低概率',
-        'MORE': '提高概率',
-        'Tokens': 'Tokens',
-        'Click a token to edit it.': '点击下方 Token 即可进行编辑。',
-        'Avoid Overused Words': '避免陈词滥调',
-        'Reduces the chance of generating words and phrases overused by AI models.': '开启后，可降低 AI 频繁使用某些“套话”的几率。',
-        'Stop Sequences': '停止生成序列',
-        'Type here and hit enter to add a stop sequence': '输入特定字符并按回车，遇到该字符时将立即停止',
-        'Cuts generation short upon reaching a specified string.': '当遇到指定的字符串时，立即停止生成。',
-        'Enable or disable this phrase group.': '启用或禁用此短语组。',
-        'Duplicate and Start as Scenario': '复制并作为新场景开始',
-        'Imports current story as a scenario with placeholders': '将当前故事带入占位符，转换为新的模板场景。',
-        'Import': '导入',
-        'Choose from a selection of generation settings.': '从下拉列表中选择生成参数配置。',
-        'Generation Options': '生成选项',
-        'Randomness': '随机性',
-        'The higher the value, the more random the output!': '该数值越高，AI 生成的内容就越发散和随机！',
-        'Output Length': '单次输出长度',
-        'Increase the length of the generated responses': '增加 AI 每次生成的文本长度限制',
-        '~ 1024 Characters': '~ 1024 个字符',
-        'Advanced Options': '进阶选项',
-        'Experimentation with these settings is encouraged, but be warned that their effects aren\'t always obvious.': '鼓励尝试调整，但效果并不总是立竿见影。',
-        'This guide explains these settings.': '点击此处查看参数设置指南。',
-        'Sampling': '采样方式',
-        'Change Samplers': '调整采样器顺序',
-        '1 hidden': '1个已隐藏',
-        'Keeps this many tokens, and deletes the rest.': '仅保留指定数量的 Token，并删除其余的。',
-        'Keeps this many ↑ Token, and deletes the rest.': '仅保留指定数量的 Token，并删除其余的。',
-        'Adds the largest token probabilities until the sum reaches this value, then deletes the leftover tokens. Higher settings preserve more tokens.': '将最大的 Token 概率相加，直到总和达到此值，然后删除剩余的。设置值越高，保留的 Token 越多。',
-        'Adds the largest token probabilities until the sum reaches this value, then deletes the leftover ↑ Token. Higher settings preserve more ↑ Token.': '将最大的 Token 概率相加，直到总和达到此值，然后删除剩余的。设置值越高，保留的 Token 越多。',
-        'Alternate Repetition Penalty': '备选重复惩罚',
-        'These options will strongly impact generation and are not recommended to set to high values.': '注意：这些选项会极大地改变生成逻辑，不建议设置过高。',
-        'Presence: ': '存在惩罚: ',
-        'Frequency: ': '频率惩罚: ',
-        'Applies a static penalty to the generation of tokens that appear within the Repetition Penalty Range.': '对出现在“重复惩罚范围”内的 Token 的生成应用静态惩罚。',
-        'Applies a static penalty to the generation of ↑ Token that appear within the Repetition Penalty Range.': '对出现在“重复惩罚范围”内的 Token 的生成应用静态惩罚。',
-        'Applies a penalty to the generation of tokens based on the number of occurrences of that token within the Repetition Penalty Range.': '根据 Token 在“重复惩罚范围”内出现的次数，对其生成应用惩罚。',
-        'Applies a penalty to the generation of ↑ Token based on the number of occurrences of that token within the Repetition Penalty Range.': '根据 Token 在“重复惩罚范围”内出现的次数，对其生成应用惩罚。',
-        'Set a bias on specific tokens to increase or decrease their chance of being generated. Surround with [square brackets] to input token ids (tokenizer specific). If a sequence of tokens is given, only the first will have the bias applied.': '对特定的 Token 设置概率偏移，以增减其生成的几率。用 [方括号] 括起来输入 token ID。',
-
-        // !!! 完整合并的世界书(Lorebook)及全量字典 !!!
-        'Lorebook': '世界书',
-        'New Lorebook Entry': '新世界书条目',
-        'New Lorebook Entry:': '新世界书条目：',
-        'Welcome to\n': '欢迎来到\n',
-        'Welcome to ': '欢迎来到 ',
-        'Welcome to': '欢迎来到',
-        'the Lorebook!': '世界书！',
-        'The perfect place to flesh out your story’s world, events, locations, characters, and environments. There are lots of settings, but you only need to worry about the ': '这里是丰富故事世界观、事件、地点、角色和环境的绝佳地点。如果刚入门，只需关注“',
-        'The perfect place to flesh out your story\'s world, events, locations, characters, and environments. There are lots of settings, but you only need to worry about the ': '这里是丰富故事世界观、事件、地点、角色和环境的绝佳地点。如果刚入门，只需关注“',
-        ' tab if you’re just getting started.': '”标签页即可。',
-        ' tab if you\'re just getting started.': '”标签页即可。',
-        'Simply place the info about your subject in the Entry Text field, and specify what Activation Keys should be looked for to show the entry to the AI.': '只需将设定的信息放入“条目文本”中，并指定“激活关键词”，当正文中出现关键词时，设定就会自动展示给 AI。',
-        'You can get started by clicking the “+ Entry” button.': '点击“+ 新建条目”按钮即可开始。',
-        'Entries': '条目列表',
-        '+ Entry': '+ 新建条目',
-        '+ Category': '+ 新建分类',
-        'Entry': '条目',
-        'Entry has no keys': '该条目未设置关键词',
-        'Entry has no keys.': '该条目未设置关键词。',
-        'The text here will be searched for Lorebook activation keys, and the matching Lore placed in context.': '将在此处的文本中搜索世界书激活关键词，并将匹配的设定放入上下文中。',
-        'Conditions': '触发条件',
-        'Let the AI fill in the blanks for you! Choose the type of entry from the list, enter what you want to generate, and hit generate. You can also have the AI add to text written in the Lore entry just like in the Story.': '让 AI 帮你填补空白！选择类型，输入要求，然后点击生成。你也可以让 AI 直接续写条目，就像在故事正文中一样。',
-        'A Lorebook entry is activated and its text placed in context whenever one of its keys is found in the recent story. Keys are case-insensitive.': '每当在最近的故事正文中找到对应的激活关键词时，该条目就会被激活，其文本将被放入上下文中。关键词不区分大小写。',
-        'Keys that begin and end with "/" are evaluated as regex. These regex keys are case-sensitive and support the following flags: i, s, m, and u.': '以 "/" 开头和结尾的关键词将被作为正则表达式(regex)解析。区分大小写，支持标志: i, s, m, u。',
-        'Advanced conditions allow more complex logic for when this lore entry should activate.': '高级触发条件允许使用更复杂的逻辑来决定该条目何时激活。',
-        'Advanced conditions': '高级触发条件',
-        'Advanced Conditions': '高级触发条件',
-        'Add Condition': '添加条件',
-        'No advanced conditions configured. Click "Add Condition" to create one.': '尚未配置高级条件。点击“添加条件”以创建一个。',
-        'Note: ': '注意：',
-        'Note:': '注意：',
-        'Multiple top-level conditions use OR logic. The entry will activate if any condition evaluates to true.': '多个顶级条件使用 OR(或) 逻辑。若任一条件为真，则激活条目。',
-        ' Multiple top-level conditions use OR logic. The entry will activate if any condition evaluates to true.': ' 多个顶级条件使用 OR(或) 逻辑。若任一条件为真，则激活条目。',
-        'Type information about the entry here.': '在此处输入该条目的设定信息。',
-        'Type a key here and hit enter to save it': '在此输入关键词，按回车键保存',
-        'True': '始终生效',
-        'Keyword Match': '关键词匹配',
-        'Keyword match': '关键词匹配',
-        'Keyword': '关键词',
-        'Lore Entry Active': '世界书条目激活',
-        'Random Chance': '随机概率',
-        'Numeric Comparison': '数值比较',
-        'String Comparison': '文本比较',
-        'AND Group': '满足全部条件',
-        'OR Group': '满足任一条件',
-        'NOT': '条件取反',
-        'Dock active tab to side': '停靠至侧边',
-        'Entry Text': '条目设定文本',
-        'Generator': '生成器',
-        'The following text will be referenced when the Keys are activated.': '当关键词被激活时，AI 将自动参考下方框内的设定文本。',
-        'Activation Keys': '激活关键词',
-        'Activates the entry when found within the recent story.': '当在最近的故事正文中发现这些词时，将唤醒该条目设定。',
-        'Always On': '始终激活',
-        'No Keys set.': '未设置关键词。',
-        'Category': '所属分类',
-        'No Category': '无分类',
-        ' Tokens': ' 个 Token',
-        ' tokens (': ' Token (',
-
-        // --- 补充设置标题与杂项 ---
-        'Lorebook Entry Header': '世界书条目标题',
-        'Entry Header': '条目标题',
-        'The text entered here will be automatically placed above any entry in this category.': '此处输入的文本将自动放置在该分类下所有条目的正文上方。',
-        'Enter default entry header...': '输入默认条目标题...',
-        'Delete Category?': '删除分类？',
-        'Delete Story?': '删除故事？',
-        'Are you sure you want to delete the category "': '是否确认删除分类 "',
-        'Are you sure you want to delete "': '是否确认删除 "',
-        'This cannot be reversed.': '此操作无法恢复。',
-        'Delete Containing Entries': '连同包含的条目一起删除',
-        'Deleting the category will move all entries out of the category.': '删除分类将会把所有条目移出该分类（保留条目本身）。',
-        'Deleting the category will also delete all entries within it.': '删除分类的同时也将彻底删除其中的所有条目。',
-        'Delete it!': '确认删除！',
-        
-        'Story Statistics': '故事统计',
-        'Get a perspective on your writing.': '全方位了解你的写作数据。',
-        'Generate Additional Stats': '生成额外统计数据',
-        'WARNING: The following options are experimental and could result in permanent corruption of your story. Creating a backup first is heavily advised.': '警告：以下选项为实验性功能，可能导致你的故事永久损坏。强烈建议先创建备份。',
-        'Trim Story': '修剪故事',
-        'Flatten Story': '展平故事',
-        'Reset to Prompt': '重置为提示词',
-        'Excludes pronouns, conjunctions, prepositions, articles, and determiners': '排除代词、连词、介词、冠词和限定词',
-        'Most Used Words': '最常用词',
-        'Save to new Preset?': '保存为新预设？',
-        'Settings saved to story.': '设置已保存至故事。',
-        'Other Options': '其他选项',
-        'Reset Changes': '重置所有更改',
-        'Changes': '更改',
-        'Paragraphs': '段落',
-        'Samplers': '采样器',
-        'You can reorder samplers here.': '你可以在这里对采样器进行重新排序。',
-        'Disabled samplers will be hidden from the sidebar.': '被禁用的采样器将从侧边栏中隐藏。',
-        'Temperature': '温度',
-        'Top-K Sampling': 'Top-K 采样',
-        'Nucleus Sampling': 'Nucleus 采样',
-        'Tail-Free Sampling': 'Tail-Free 采样',
-        'Typical Sampling': 'Typical 采样',
-        'Min-P (disabled)': 'Min-P (已禁用)',
-        '(disabled)': '(已禁用)',
-        'disable': '禁用',
-        'enable': '启用',
-        'Message Scaffolding & System Prompt:': '消息构建 & 系统提示词：',
-        'Message Scaffolding & System Prompt': '消息构建 & 系统提示词',
-        'Search your stories': '搜索你的故事...',
-        'Filters': '筛选',
-        'Display': '显示',
-        'Compact View': '紧凑视图',
-        'Show On Top': '置顶显示',
-        'Shelves': '书架',
-        'Shelf': '所属书架',
-        'No Shelf': '无书架',
-        'Favorites': '收藏夹',
-        'Sort By': '排序方式',
-        'Most Recent': '最近使用',
-        'Story Title': '故事标题',
-        'Story is currently stored encrypted on the server.': '当前故事已加密存储在云端服务器上。',
-        'Description': '故事简介',
-        'Search Tags': '搜索标签',
-        'Type in the box below and press enter to save.': '在下方输入并按回车键保存。',
-        'Type here and hit enter to save': '在此输入并按回车键保存',
-        'Click a tag to delete it.': '点击标签即可将其删除。',
-        'Prompt Chunks': '提示词区块',
-        'No custom prompt chunks yet. Click + to add one.': '暂无自定义提示词区块。点击 + 号添加。',
-        
-        // --- 特殊长句切分修复 ---
-        'A default bias will be applied, reducing the likelihood of dinkus': '系统将应用默认概率偏移，降低生成章节分隔符',
-        'A default bias will be applied, reducing the likelyhood of dinkus': '系统将应用默认概率偏移，降低生成章节分隔符',
-        'A default bias will be applied, reducing the likelihood of dinkus ': '系统将应用默认概率偏移，降低生成章节分隔符 ',
-        'A default bias will be applied, reducing the likelyhood of dinkus ': '系统将应用默认概率偏移，降低生成章节分隔符 ',
-        'A default bias will be applied, reducing the likelihood of dinkus (': '系统将应用默认概率偏移，降低生成章节分隔符 (',
-        'A default bias will be applied, reducing the likelyhood of dinkus (': '系统将应用默认概率偏移，降低生成章节分隔符 (',
-        ') and asterism (': ') 和星号组合 (',
-        ') to be generated.': ') 的可能性。',
-        'Generation requests will return token probabilities for the response which can be examined by clicking the': '生成请求将后台返回响应的 Token 概率，可通过点击',
-        'Generation requests will return token probabilities for the response which can be examined by clicking the ': '生成请求将后台返回响应的 Token 概率，可通过点击 ',
-        'button next to Retry.': '图标（位于重试按钮旁）进行查看。',
-        ' button next to Retry.': ' 图标（位于重试按钮旁）进行查看。',
-        'Selectable alternate tokens and probabilities will be shown in the editor.': '编辑器中将显示可选的备选词及其概率。',
-        'Words will be chosen solely based on their natural likelihood of being generated.': '将完全根据词汇生成的自然概率来选择词汇。'
-    };
 
     // ==========================================
-    // 3. 核心翻译引擎与逻辑
+    // 2. 路由监听与脚本生命周期管理
     // ==========================================
+    let lastPath = '';
+    let currentRouteHandler = null;
 
-    let activeTranslationMap = {};
-    let regex;
+    // 检查并分配对应页面的汉化逻辑
+    function checkRoute() {
+        const path = window.location.pathname;
+        if (path === lastPath) return;
+        lastPath = path;
 
-    // 动态更新词典的方法（修复 SPA 路由切换问题的核心）
-    function updateDictionary() {
-        const pathname = window.location.pathname;
-        if (pathname.includes('/image') || pathname.includes('/imagetools')) {
-            activeTranslationMap = Object.assign({}, commonTranslationMap, imageTranslationMap);
-        } else if (pathname.includes('/inspect')) {
-            activeTranslationMap = Object.assign({}, commonTranslationMap, inspectTranslationMap);
-        } else if (pathname.includes('/stor')) {
-            activeTranslationMap = Object.assign({}, commonTranslationMap, storiesTranslationMap);
-        } else {
-            // 全局包含防漏
-            activeTranslationMap = Object.assign({}, commonTranslationMap, imageTranslationMap, storiesTranslationMap, inspectTranslationMap); 
+        // 如果之前有运行的翻译监听，先销毁它（防止内存泄漏和页面冲突）
+        if (currentRouteHandler) {
+            currentRouteHandler.destroy();
+            currentRouteHandler = null;
         }
 
-        if (Object.keys(activeTranslationMap).length > 0) {
-            const sortedKeys = Object.keys(activeTranslationMap).sort((a, b) => b.length - a.length);
-            const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            regex = new RegExp(sortedKeys.map(escapeRegExp).join('|'), 'g');
+        // 根据新路径启动对应的汉化模块
+        if (path.startsWith('/stories') && config.stories) {
+            currentRouteHandler = runStoriesTranslation();
+        } else if (path.startsWith('/image') && config.image) {
+            currentRouteHandler = runImageTranslation();
         }
     }
 
-    function replaceText(node) {
-        if (!regex || node.nodeType !== Node.TEXT_NODE || !node.nodeValue.trim()) return;
+    // 劫持并监听浏览器 History API 以支持单页应用无刷新跳转
+    function setupRouteListeners() {
+        const originalPushState = history.pushState;
+        history.pushState = function() {
+            originalPushState.apply(this, arguments);
+            checkRoute();
+        };
 
-        if (node.parentElement) {
-            const tagName = node.parentElement.tagName;
-            // 修复 Bug：去除了过度匹配的 .prompt-input-box-prompt，仅保护真正的输入控件 ProseMirror 和 textarea，解放外围 UI 按钮
-            if (tagName === 'CODE' || tagName === 'TEXTAREA' || tagName === 'INPUT' ||
-                node.parentElement.closest('.image-prompt-suggestions, .ProseMirror, textarea, input, [contenteditable="true"]')) {
-                return;
-            }
-        }
+        const originalReplaceState = history.replaceState;
+        history.replaceState = function() {
+            originalReplaceState.apply(this, arguments);
+            checkRoute();
+        };
 
-        let text = node.nodeValue;
-        
-        // 孤立碎词精准匹配，防止误伤（如 Expand by a little 中的 by，绝对不会影响 probabilities）
-        if (text.trim() === 'by') {
-            node.nodeValue = text.replace('by', '：');
-            return;
-        }
-
-        let replacedValue = text.replace(regex, (match) => activeTranslationMap[match]);
-        if (node.nodeValue !== replacedValue) {
-            node.nodeValue = replacedValue;
-        }
+        window.addEventListener('popstate', checkRoute);
     }
 
-    function translateAttributes(node) {
-        if (!regex || node.nodeType !== Node.ELEMENT_NODE) return;
-        
-        // 加入了 data-placeholder, data-empty-text 和 value 属性进行深层拦截扫描，搞定富文本顽固占位符
-        const attributesToTranslate = ['placeholder', 'title', 'aria-label', 'data-placeholder', 'data-empty-text', 'value'];
-        
-        attributesToTranslate.forEach(attr => {
-            if (node.hasAttribute(attr)) {
-                const val = node.getAttribute(attr);
-                let replacedValue = val.replace(regex, (match) => activeTranslationMap[match]);
-                if (val !== replacedValue) {
-                    node.setAttribute(attr, replacedValue);
+    // 页面完全加载后启动
+    function initApp() {
+        setupRouteListeners();
+        checkRoute(); // 初始化首次检查
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        initApp();
+    }
+
+
+    // ==========================================
+    // 3. Stories 页面汉化逻辑
+    // ==========================================
+    function runStoriesTranslation() {
+        let isDestroyed = false; // 用于控制销毁
+
+        const i18n = {
+            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们重视您的隐私和安全。您的故事、设置预设以及其他远程存储的内容都在您的电脑上进行了本地加密。为了解密您的内容并保护您的隐私，您必须输入之前设置的密码。',
+            'Password Required': '需要密码',
+            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
+            'Forgot Password': '忘记密码',
+            'Update': '更新',
+            'Image Generation Canvas Update: New Tools, Better Performance, and 3D Support': '图像生成画布更新：新工具、更好的性能和 3D 支持',
+            'Precise Reference Release: Character & Style References + Reference Inpainting': '精确参考发布：角色与风格参考 + 参考内画',
+            'Introducing NovelAI User Scripts': '引入 NovelAI 用户脚本',
+            'NovelAI\'s scripting system is here! Providing deep functionality, custom UI components, generation hooks, and document modification.': 'NovelAI 的脚本系统来了！提供深度功能、自定义 UI 组件、生成钩子和文档修改。',
+            'User Settings': '用户设置',
+            'AI Settings': 'AI 设置',
+            'Interface': '界面',
+            'Theme': '主题',
+            'Account': '账户',
+            'Your Stories': '您的故事',
+            'Search your stories': '搜索您的故事',
+            'Filters': '筛选',
+            'Display': '显示',
+            'Compact View': '紧凑视图',
+            'Show On Top': '置顶显示',
+            'Shelves': '书架',
+            'Favorites': '收藏',
+            'Local Stories': '本地故事',
+            'Sort By': '排序方式',
+            'Most Recent': '最近编辑',
+            'Alphabetical': '按字母顺序',
+            'Creation Date': '按创建日期',
+            'New Shelf': '新建书架',
+            'Import File': '导入文件',
+            'Text To Speech': '文字转语音',
+            'Defaults': '默认值',
+            'Support': '支持',
+            'Change Log': '更新日志',
+            'AI Responses': 'AI 响应',
+            'Stream AI Responses': '流式 AI 响应',
+            'AI responses will be streamed, appearing token by token.': 'AI 响应将以流式传输，逐个 Token 显示。',
+            'Text will appear all at once when generation has finished.': '生成完成后，文本将一次性全部显示。',
+            'Continue Response to End of Sentence': '继续响应直到句子结束',
+            'Responses will attempt to continue until the end of a sentence is found.': '响应将尝试继续生成，直到找到句子的结尾。',
+            'Responses will end normally.': '响应将正常结束。',
+            'Hypebot': '氛围机器人',
+            'Comment Output': '评论输出',
+            'Off': '关闭',
+            'Automatic': '自动',
+            'Permanent': '永久',
+            'Clear Comments': '清除评论',
+            'Automatically clear comments on generating story text.': '生成故事文本时自动清除评论。',
+            'Don\'t automatically clear comments on generating story text.': '生成故事文本时不自动清除评论。',
+            'Comment Chance': '评论概率',
+            'Default: 5%': '默认：5%',
+            'Comment Avatar': '评论头像',
+            'Auto-Select': '自动选择',
+            'Experimental': '实验性',
+            'Preamble': '前言',
+            'The context will have a small preamble prepended to improve generations on low context. The exact behaviour varies per model.': '上下文前将添加一小段前言，以改善低上下文时的生成效果。具体行为因模型而异。',
+            'The context will not have a preamble prepended.': '上下文前不会添加前言。',
+            'Default Bias': '默认偏置',
+            'A default bias will be applied, reducing the likelyhood of dinkus (***) and asterism (⁂) to be generated.': '将应用默认偏置，降低生成章节分隔符 (***) 和星号 (⁂) 的可能性。',
+            'No default bias will be applied.': '不应用默认偏置。',
+            'Enable Token Probabilities': '启用 Token 概率',
+            'Generation requests will return token probabilities for the response which can be examined by clicking the': '生成请求将返回响应的 Token 概率，可以通过点击',
+            'button next to Retry.': '“重试”旁边的按钮来查看。',
+            'Token probabilities will not be returned with generation requests.': '生成请求不会返回 Token 概率。',
+            'Hotkeys': '快捷键',
+            'Logout': '登出',
+            'Streamed Response Delay': '流式响应延迟',
+            'Default: 0': '默认：0',
+            'Comment Streamed Response Delay': '评论流式响应延迟',
+            'Editor Token Probabilities': '编辑器 Token 概率',
+            'Selectable alternate tokens and probabilities will be shown in the editor.': '编辑器中将显示可选的备用 Token 及其概率。',
+            'Enable to show selectable alternate tokens and probabilities in the editor.': '启用以在编辑器中显示可选的备用 Token 及其概率。',
+            'UI Language': 'UI 语言',
+            'English': '英语',
+            'Text Settings': '文本设置',
+            'Interface Font Size': '界面字体大小',
+            'px': 'px',
+            'Default: 16px': '默认：16px',
+            'Line Spacing': '行距',
+            'em': 'em',
+            'Default: 1.8em': '默认：1.8em',
+            'Paragraph Spacing': '段落间距',
+            'Default: 0.5em': '默认：0.5em',
+            'Max Line Width': '最大行宽',
+            'Default: 100% (1200px)': '默认：100% (1200px)',
+            'Output Font Size': '输出字体大小',
+            'Default: 18px': '默认：18px',
+            'Paragraph Indent': '段落缩进',
+            'Default: 10px': '默认：10px',
+            'Button Scale': '按钮缩放',
+            'Default: 1': '默认：1',
+            'Interaction Settings': '交互设置',
+            'Gesture Controls': '手势控制',
+            'Swiping on touch devices will open and close the sidebars.': '在触摸设备上滑动将打开和关闭侧边栏。',
+            'Gesture controls are disabled.': '手势控制已禁用。',
+            'Swap Context Menu Controls': '交换上下文菜单控制',
+            'Right click will open the standard context menu. Ctrl+right click will open the NAI context menu.': '右键点击将打开标准上下文菜单。Ctrl+右键点击将打开 NAI 上下文菜单。',
+            'Right click will open the NAI context menu. Ctrl+right click will open the standard context menu.': '右键点击将打开 NAI 上下文菜单。Ctrl+右键点击将打开标准上下文菜单。',
+            'Other Settings': '其他设置',
+            'Input Box': '输入框',
+            'The input box is visible.': '输入框可见。',
+            'The input box is hidden.': '输入框已隐藏。',
+            'Editor Spellcheck': '编辑器拼写检查',
+            'Spellcheck is enabled in the editor (on supported browsers)': '编辑器中已启用拼写检查',
+            'Spellcheck is disabled in the editor.': '编辑器中已禁用拼写检查。',
+            'Editor Lorebook Keys': '编辑器世界书关键词',
+            'Keys of currently active Lorebook entries will be bolded in the editor. Disabling this setting may improve performance on very large stories or stories with large Lorebooks.': '当前启用的世界书条目关键词将在编辑器中加粗。禁用此设置可能会提升包含巨量文本或大型世界书的故事的性能。',
+            'No special styling will be applied to Lorebook keys in the editor.': '不会对编辑器中的世界书关键词应用特殊样式。',
+            'Show Tips': '显示提示',
+            'Tips will be shown below the editor.': '提示将显示在编辑器下方。',
+            'Tips will not be shown.': '将不显示提示。',
+            'Auto Format Text': '自动格式化文本',
+            'Text—both user and generated—will be automatically formatted in the editor.': '用户输入和生成的文本都将在编辑器中自动格式化。',
+            'Text—both user and generated—will not be automatically formatted in the editor.': '用户输入和生成的文本将不会在编辑器中自动格式化。',
+            'Editor Highlighting': '编辑器高亮',
+            'Text in the editor will be highlighted based on origin.': '编辑器中的文本将根据其来源进行高亮显示。',
+            'Text in the editor will not be highlighted.': '编辑器中的文本不会被高亮显示。',
+            'Context Viewer Colors': '上下文查看器颜色',
+            'Text in the context viewer will be color coded based on origin.': '上下文查看器中的文本将根据来源进行颜色编码。',
+            'Text in the context viewer will use the default颜色。': '上下文查看器中的文本将使用默认颜色。',
+            'Show Story Title': '显示故事标题',
+            'The story title will be shown above the editor.': '故事标题将显示在编辑器上方。',
+            'The story title will not be shown above the editor.': '故事标题不会显示在编辑器上方。',
+            'Show Editor Toolbar': '显示编辑器工具栏',
+            'A toolbox with options to change text formatting and more will appear when selecting text in Editor V2.': '在编辑器 V2 中选中文本时，将出现一个包含文本格式等选项的工具箱。',
+            'Selecting text in Editor V2 will not open the toolbox to change text formatting and more.': '在编辑器 V2 中选中文本将不会打开工具箱。',
+            'Keyboard Displaces Content': '键盘顶起内容',
+            'The onscreen keyboard of some mobile devices will displace the content of the page.': '某些移动设备的屏幕键盘会顶起页面内容。',
+            'The onscreen keyboard of some mobile devices will overlay the content of the page.': '某些移动设备的屏幕键盘会覆盖在页面内容上方。',
+            'Paragraph Visibility Range': '段落可见范围',
+            'Paragraphs scrolled out-of-view past the set range will be unloaded in Editor V2. This improves editing performance especially with larger stories.': '滚动出设定范围的段落将在编辑器 V2 中被卸载。这能提升编辑性能，特别是针对大型故事。',
+            'Default: 1000': '默认：1000',
+            'Highlight Speech': '高亮对话',
+            'Choose if speech (text between quotation marks) in the editor should be highlighted in italic and slightly less opaque. When choosing Inverted, non-speech is shown in italic and slightly less opaque instead.': '选择是否将编辑器中的对话（引号之间的文本）以斜体并稍微降低不透明度的方式高亮显示。',
+            'Only available in Editor V2.': '仅在编辑器 V2 中可用。',
+            'Highlight': '高亮',
+            'Inverted': '反转',
+            'Show Identicon': '显示哈希头像',
+            'A unique identicon will be shown for your account.': '您的账户将显示一个独特的哈希头像。',
+            'A theme-specific default avatar will be shown for your account.': '您的账户将显示特定于主题的默认头像。',
+            'Show Minibar (Desktop Only)': '显示迷你侧边栏',
+            'The minibar will display on the left side of the screen.': '迷你侧边栏将显示在屏幕左侧。',
+            'The minibar will not be displayed.': '迷你侧边栏将不会显示。',
+            'Apply & Save Theme': '应用并保存主题',
+            'Import': '导入',
+            'Export': '导出',
+            'Default Themes': '默认主题',
+            'NovelAI Dark': 'NovelAI 深色',
+            'NovelAI Light': 'NovelAI 浅色',
+            'Slate': '石板灰',
+            'Midnight Doll': '午夜人偶',
+            'Subtle Terminal': '复古终端',
+            'Bubblegum': '泡泡糖',
+            'Matrix': '黑客帝国',
+            'Purple Noir': '紫色黑色电影',
+            'Sagiri': '纱雾',
+            'Monkey': '猴子',
+            'Ink': '墨水',
+            'Wine': '红酒',
+            'Vibrowave': '震动波',
+            'Sand': '沙子',
+            'Gruvbox Dark': 'Gruvbox 深色',
+            'Counter Militant': '反击武装',
+            'Amber': '琥珀',
+            'Frog': '青蛙',
+            'NovelAI Dark (Legacy)': 'NovelAI 深色 (旧版)',
+            'Theme Editor': '主题编辑器',
+            'This is paragraph text. Nice!': '这是段落文本。不错！',
+            'This is a prompt.': '这是一个提示词。',
+            'This is AI text.': '这是 AI 生成的文本。',
+            'This is edited text.': '这是编辑过的文本。',
+            'This is new user text.': '这是新的用户文本。',
+            'This is highlighted text.': '这是高亮显示的文本。',
+            'Header Font': '标题字体',
+            'Paragraph Font': '段落字体',
+            'Header': '标题',
+            'Paragraph': '段落',
+            'Warning/Error': '警告/错误',
+            'Foreground': '前景色',
+            'Background': '背景色',
+            'Dark Background': '深色背景',
+            'Input Background': '输入框背景',
+            'Low Intensity Color': '低强度颜色',
+            'Mid Intensity Color': '中强度颜色',
+            'High Intensity Color': '高强度颜色',
+            'Custom CSS': '自定义 CSS',
+            'Current Tier': '当前订阅层级',
+            'Not Subscribed': '未订阅',
+            'Manage': '管理',
+            'Pen Name': '笔名',
+            'Change': '更改',
+            'Delete Account': '删除账户',
+            'Request': '请求',
+            'Show Account ID': '显示账户 ID',
+            'Get Persistent API Token': '获取永久 API Token',
+            'Stay Informed.': '保持关注。',
+            'Subscribe to our newsletter.': '订阅我们的新闻邮件。',
+            'Subscribe': '订阅',
+            'Manage Cookie Preferences': '管理 Cookie 偏好',
+            'Default Storage Location': '默认存储位置',
+            'Local': '本地',
+            'Server': '服务器',
+            'New & imported stories will be saved locally and stored encrypted remotely.': '新建和导入的故事将保存在本地，并在远程加密存储。',
+            'Exporting and backing up your stories is highly recommended, should your browser cache get cleared, or if you lose access to your account.': '强烈建议导出并备份您的故事，以防浏览器缓存被清除，或失去账户访问权限。',
+            'Download All Stories': '下载所有故事',
+            'Gift Key (Purchasing Disabled)': '礼物密钥',
+            'Gift key purchases have been removed indefinitely due to abuse.': '由于滥用，礼物密钥购买已被无限期移除。',
+            'Purchase New Gift Key': '购买新礼物密钥',
+            'Key': '密钥',
+            'Date Created': '创建日期',
+            'Tier': '层级',
+            'Status': '状态',
+            'No Gift Keys yet!': '还没有礼物密钥！',
+            'Enter your email address below to receive an account deletion confirmation email.': '在下方输入您的电子邮件地址以接收账户删除确认邮件。',
+            'Email': '电子邮件',
+            'Send Deletion Confirmation Email': '发送删除确认邮件',
+            'Cancel': '取消',
+            'Save': '保存',
+            'Text to Speech Source': '文字转语音来源',
+            'Local TTS uses your browsers available speech synthesis capabilities.': '本地 TTS 使用您浏览器自带的语音合成功能。',
+            'Streamed TTS is higher quality, uses a model hosted by NovelAI, and requires an active subscription. 100 free generations given for trial purposes.': '流式 TTS 质量更高，使用 NovelAI 托管的模型。',
+            'Your browser does not support local TTS.': '您的浏览器不支持本地 TTS。',
+            'Streamed': '流式传输',
+            'TTS will use NovelAI\'s remote TTS service.': 'TTS 将使用 NovelAI 的远程语音服务。',
+            'Speak Outputs': '朗读输出',
+            'Outputs will be read by TTS.': '生成的输出将由 TTS 朗读。',
+            'Outputs will not be read.': '生成的输出将不会被朗读。',
+            'Speak Inputs': '朗读输入',
+            'In addition to outputs, Inputs will be read by TTS.': '除了输出外，用户的输入也将由 TTS 朗读。',
+            'Has no effect if speak outputs is disabled': '如果禁用了“朗读输出”，则此项无效',
+            'Inputs will not be read.': '用户的输入将不会被朗读。',
+            'Speak HypeBot Comments': '朗读 HypeBot 评论',
+            'HypeBot comments will be read by TTS.': 'HypeBot 机器人的评论将由 TTS 朗读。',
+            'HypeBot comments will not be read.': 'HypeBot 机器人的评论将不会被朗读。',
+            'Streamed TTS Settings': '流式 TTS 设置',
+            'Model': '模型',
+            'Story Voice': '故事语音',
+            'Text entered here will be used for the test/download buttons.': '此处输入的文本将用于测试/下载按钮。',
+            'Saved Voices': '已保存的语音',
+            'Select a voice to edit': '选择一个语音进行编辑',
+            'Name': '名称',
+            'Seed': '种子值',
+            'Randomize': '随机化',
+            'Save Voice': '保存语音',
+            'Delete Voice': '删除语音',
+            'Volume': '音量',
+            'Speed': '语速',
+            'Note: Will not affect the speed of downloaded audio.': '注意：这不会影响下载音频的语速。',
+            'HypeBot Voice': 'HypeBot 语音',
+            'unisex': '中性',
+            'female': '女性',
+            'male': '男性',
+            'No saved voices. Add one first.': '没有已保存的语音。请先添加一个。',
+            'Voice': '语音',
+            'unknown voice': '未知语音',
+            'custom': '自定义',
+            'Seed Input': '种子输入',
+            'TTS will use the browsers Speech Synthesis API.': 'TTS 将使用浏览器的语音合成 API。',
+            'Local TTS Settings': '本地 TTS 设置',
+            'Google US English': 'Google 美国英语',
+            'Test Voice': '测试语音',
+            'Pitch': '音调',
+            'Microsoft Huihui - Chinese (Simplified, PRC)': 'Microsoft Huihui - 中文',
+            'Language: zh-CN, Local: Yes': '语言: zh-CN, 本地: 是',
+            'Default AI Model': '默认 AI 模型',
+            'New stories will use this model by default.': '新创建的故事将默认使用此模型。',
+            'A massive and versatile 355B Mixture of Experts model.': '庞大且功能全面的 355B 混合专家模型。',
+            'Default Preset': '默认生成预设',
+            'New Stories will use the selected preset as a default.': '新创建的故事将默认使用所选预设。',
+            'Default AI Module': '默认 AI 模块',
+            'The selected AI Model does not support Modules.': '所选 AI 模型不支持模块。',
+            'Lorebook Generation Settings': '世界书生成设置',
+            'Change the Model and settings preset used by the Lorebook Generator.': '更改世界书生成器使用的模型和预设。',
+            'Lorebook Generation Model': '世界书生成模型',
+            'Lore Generation Preset': '世界书生成预设',
+            'Legacy Lore Generation': '旧版世界书生成',
+            'Toggle Menu Bar': '切换菜单栏',
+            'Toggle Info Bar': '切换信息栏',
+            'Toggle Bars': '切换所有侧边栏',
+            'Focus Editor': '聚焦编辑器',
+            'Request AI Generation': '请求 AI 生成',
+            'Generate Inline': '内联生成',
+            'Cancel AI Generation': '取消 AI 生成',
+            'Focus Input Field': '聚焦输入框',
+            'Redo': '重做',
+            'Open Redo List': '打开重做列表',
+            'Undo': '撤销',
+            'Retry AI Generation': '重试 AI 生成',
+            'Open Lorebook': '打开世界书',
+            'Open Context Viewer': '打开上下文查看器',
+            'Open User Scripts Modal': '打开用户脚本窗口',
+            'Open Tokenizer': '打开分词器',
+            'Open Token Probabilities': '打开 Token 概率',
+            'Toggle Editor Token Probabilities': '切换编辑器 Token 概率',
+            'Close Modal': '关闭弹窗',
+            'Toggle Input Box': '切换输入框',
+            'Toggle Highlighting': '切换高亮',
+            'Toggle Spellcheck': '切换拼写检查',
+            'Create New Story': '创建新故事',
+            'Reset Theme': '重置主题',
+            'Delete Current Story': '删除当前故事',
+            'Stop TTS': '停止语音播放',
+            'Toggle Bold': '切换加粗',
+            'Toggle Italic': '切换斜体',
+            'Toggle Underline': '切换下划线',
+            'Toggle Strikethrough': '切换删除线',
+            'Remote Storage': '远程存储',
+            'Switch to Remote Storage': '切换到远程存储',
+            'Keep Local Storage': '保持本地存储',
+            'Author': '作者',
+            'Account Settings': '账户设置',
+            'Other': '其他',
+            'Image Generation': '图像生成',
+            'Tokenizer': '分词器',
+            'User Scripts': '用户脚本',
+            'Help': '帮助',
+            'Documentation': '官方文档',
+            'Version': '版本',
+            'Enter Password': '输入密码',
+            'Dashboard': '控制台',
+            'Manage Account': '管理账户',
+            'Latest News': '最新消息',
+            'Read More': '阅读更多',
+            'Welcome back, Author': '欢迎回来，作者',
+            'Continue a Story': '继续一个故事',
+            'Visualize your favorite characters.': '将您最喜欢的角色可视化。',
+            'Image Generator': '图像生成器',
+            'Generate Anime and Furry imagery with our SOTA image gen model!': '使用我们最先进的图像生成模型生成动漫和兽人图像！',
+            'Director Tools': '导演工具',
+            'Use a variety of AI tools to edit your images.': '使用各种 AI 工具编辑您的图像。',
+            'New Story': '新故事',
+            'Image Gen': '图像生成',
+            'There are issues connecting to the backend right now, please check your connection or try again...': '目前连接后端服务器存在问题，请检查您的网络连接或稍后重试...',
+            'Free Trial': '免费试用',
+            'text generations remaining.': '次文本生成次数剩余。',
+            'You\'re getting': '您将获得',
+            'tokens of AI context. Equivalent to our': 'Tokens 的 AI 上下文记忆。这等同于我们的',
+            'Scroll tier': '卷轴订阅层级',
+            'Seen enough?': '看够了吗？',
+            'Check out our plans': '查看我们的订阅计划',
+
+            // =========================================
+            // 追加的新翻译内容 (基于提取出的文本文件)
+            // =========================================
+            'Stories - NovelAI': '故事 - NovelAI',
+            'Opus Tier': 'Opus 订阅层级',
+            'Interactive Tutorials': '互动教程',
+            'NovelAI Discord': '官方 Discord',
+            'a few seconds ago': '几秒前',
+            '4 minutes ago': '4 分钟前',
+            'a day ago': '1 天前',
+            'Last Edited: a few seconds ago': '最后编辑：几秒前',
+            'Last Edited: 4 minutes ago': '最后编辑：4 分钟前',
+            'Last Edited: a day ago': '最后编辑：1 天前',
+            'Let\'s start writing!': '开始写作吧！',
+            'Select an option to continue.': '选择一个选项以继续。',
+            'Storyteller': '小说创作',
+            'Write alongside the AI to flesh out your writing and ideas.': '与 AI 一同写作，充实您的文字与想法。',
+            'Celestial Curves': '天体曲线',
+            'You are a wizened wizard of old. Comfortably seated in your most glorious of thrones, your eyes are focused on the curvature of the perfect object before you. This is your favorite past-time and your true purpose - to ponder. With a glazed stare, you watch and ponder what you see in the orb:': '你是一位古老的睿智巫师。舒适地坐在你最荣耀的宝座上，你的双眼聚焦在面前完美物体的曲线上。这是你最喜欢的消遣，也是你真正的目标——沉思。带着呆滞的目光，你注视并思考着你在球体中看到的一切：',
+            'scenes of various natural settings from around the world, but also scenes of war and destruction. There are otherworldly scenes such as glowing orbs and strange beings and even representations of things that don\'t quite seem possible. The orb seems to change the more time you spend staring into it. As you ponder the many wondrous sights, you grow older and wearier each day. But there are always new wonders to be seen and marveled over. As you look deeper into the orb, you see new places in the distance and begin to wonder if perhaps this is truly another universe hidden beyond the stars. The orb itself seems to grow brighter as you ponder, and then dims slightly when you turn away to take a break. Each time you gaze at it, you feel the need to return to your throne and continue contemplating. Eventually the orb begins to glow bright again, and you must return to contemplate once more.': '世界各地各种自然环境的场景，还有战争与毁灭的场景。还有诸如发光球体和奇怪生物等超凡脱俗的景象，甚至还有看起来不太可能存在的事物。你盯着它看的时间越长，球体似乎就越在变化。随着你思考着许多奇妙的景象，你一天比一天变老，也更疲惫。但总有新的奇迹值得去看、去惊叹。当你更深入地观察球体时，你看到了远方的新地方，并开始怀疑这是否真的是隐藏在星空彼岸的另一个宇宙。当你沉思时，球体本身似乎变得更亮，当你转身休息时又会稍微变暗。每次你凝视它，你都会觉得有必要回到你的宝座上继续沉思。最终，球体再次开始发出明亮的光芒，你必须再次回来沉思。',
+            'Text Adventure': '文字冒险',
+            'Begin an AI-generated quest using words and actions.': '使用语言和行动开始一场由 AI 生成的冒险。',
+            'Army of what?!': '什么军队？！',
+            'There are Corgies lined up as far as your eyes can see. Small Corgies, large Corgies, broad Corgies, skinny Corgies there even are Corgies riding upon other Corgies! They are all standing at attention, ready to do your bidding.': '只要你的视线能及，就有柯基犬排成一排。小柯基，大柯基，胖柯基，瘦柯基，甚至还有骑在其他柯基背上的柯基！它们都立正站好，准备听候你的差遣。',
+            'You look around for something to fight with.': '你环顾四周，寻找可以战斗的武器。',
+            'You have only two options: Walk or Fight. Which will you choose? The choice is clear; you need some way to defend yourself from these monstrous creatures. There\'s a good chance you\'ll end up fighting them anyway so it might as well be now.': '你只有两个选择：走开或战斗。你会怎么选？选择很明确；你需要一些方法来保护自己免受这些怪物的伤害。无论如何，你最终很可能会和它们战斗，所以不如就趁现在。',
+            'Choose a Scenario': '选择一个场景',
+            'Generate Images': '生成图像',
+            'Can\'t think of any ideas?': '没有头绪吗？',
+            'Pick one of ours to get started.': '挑选我们的一个场景来开始吧。',
+            'Use the browser below to select a scenario that tickles your fancy, you’ll be able to view the contents before starting.': '使用下方的浏览器选择一个你感兴趣的场景，你可以在开始前预览内容。',
+            'Shuffle': '随机抽取',
+            'Loading...': '加载中...',
+            'View All Scenarios': '查看所有场景',
+            'Click Here': '点击这里',
+            'The Mysterious Note': '神秘笔记',
+            'by': ':',
+            'mystery': '悬疑',
+            'detective': '侦探',
+            'You are a private detective proud of your problem solving skills and the experience to back it up, but this latest case is your hardest one yet.': '你是一名私家侦探，为自己的问题解决能力和丰富的经验感到自豪，但这最新的案子是你迄今为止最艰难的。',
+            'Story': '故事',
+            'Advanced': '高级',
+            'Story Mode': '故事模式',
+            'AI Model': 'AI 模型',
+            'Change Default': '更改默认',
+            'Config Preset': '配置预设',
+            'Edit Preset': '编辑预设',
+            'Changes the settings of the AI model.': '更改 AI 模型的设置。',
+            'Default': '默认',
+            'Memory': '记忆',
+            'The AI will better remember info placed here.': 'AI 将更好地记住放置在此处的信息。',
+            'tokens': 'Tokens',
+            'Author\'s Note': '作者语',
+            'Info placed here will strongly influence AI output.': '放置在此处的信息将强烈影响 AI 的输出。',
+            'Lorebook Quick Access': '世界书快速访问',
+            'Story Options': '故事选项',
+            'View Story Stats': '查看故事统计',
+            'Story is currently stored encrypted on the server.': '故事目前在服务器上加密存储。',
+            'Story is currently stored locally. Locally stored stories may be deleted by your browser after a period of non-use.': '故事目前在本地存储。长时间不使用后，浏览器可能会删除本地存储的故事。',
+            'Export Story': '导出故事',
+            'To File': '到文件',
+            'Delete Story': '删除故事',
+            '(cannot be undone)': '(无法撤销)',
+            'Delete': '删除',
+            'Context': '上下文',
+            'Get a full view of what’s sent to the AI.': '完整查看发送给 AI 的内容。',
+            'Last Context': '上次上下文',
+            'Current Context': '当前上下文',
+            'Edit System Prompt': '编辑系统提示词',
+            'Extend NovelAI with custom scripts.': '使用自定义脚本扩展 NovelAI。',
+            'Edit User Scripts': '编辑用户脚本',
+            'Logit Bias': 'Logit 偏置 (词汇偏好)',
+            'Weigh the AI’s chance of generating specific tokens.': '调整 AI 生成特定 Token 的概率。',
+            'Bias 0': '偏置 0',
+            'empty': '空',
+            'Type in the area below, then press enter to save.': '在下方区域输入，然后按回车键保存。',
+            'Bias:': '偏置：',
+            'LESS': '更少',
+            'A bias of zero will have no effect.': '偏置为 0 将没有任何效果。',
+            'MORE': '更多',
+            'Tokens': 'Tokens',
+            'Click a token to edit it.': '点击一个 Token 进行编辑。',
+            'Avoid Overused Words': '避免过度使用的词汇',
+            'Reduces the chance of generating words and phrases overused by AI models.': '降低生成 AI 模型过度使用的词汇和短语的概率。',
+            'Words will be chosen solely based on their natural likelihood of being generated.': '将完全基于词汇生成的自然概率进行选择。',
+            'Stop Sequences': '停止序列',
+            'Duplicate and Start as Scenario': '创建副本并作为场景开始',
+            'Imports current story as a scenario with placeholders': '将当前故事作为带有占位符的场景导入',
+            'Choose from a selection of generation settings.': '从一系列生成设置中进行选择。',
+            'Settings saved to story.': '设置已保存至故事。',
+            'Save to new Preset?': '保存为新预设？',
+            'Other Options': '其他选项',
+            'Reset Changes': '重置更改',
+            'Generation Options': '生成选项',
+            'Randomness': '随机性',
+            'The higher the value, the more random the output!': '数值越高，输出越随机！',
+            'Output Length': '输出长度',
+            'Increase the length of the generated responses': '增加生成回复的长度',
+            'Characters': '字符数',
+            'Default: 1024': '默认：1024',
+            'Advanced Options': '高级选项',
+            'Experimentation with these settings is encouraged, but be warned that their effects aren\'t always obvious.': '鼓励尝试这些设置，但请注意其效果可能不总是很明显。',
+            'This guide explains these settings.': '本指南解释了这些设置。',
+            'Sampling': '采样',
+            'Top-K:': 'Top-K:',
+            'Default: 40': '默认：40',
+            'Nucleus:': 'Nucleus 采样:',
+            'Default: 0.95': '默认：0.95',
+            'Change Samplers': '更改采样器',
+            '1 hidden': '1 个已隐藏',
+            'Alternate Repetition Penalty': '替代重复惩罚',
+            'These options will strongly impact generation and are not recommended to set to high values.': '这些选项将严重影响生成结果，不建议设置过高的值。',
+            'Presence:': '存在惩罚:',
+            '[0] (off)': '[0] (关闭)',
+            'Default: 0 (off)': '默认：0 (关闭)',
+            'Frequency:': '频率惩罚:',
+            'Send': '发送',
+            'Text is translated into tokens for the AI to understand. They are similar to syllables.': '文本会被转化为 Token 以便 AI 理解。它们类似于音节。',
+            'Generate a random title for the story': '为故事生成一个随机标题',
+            'Transform': '转换',
+            'Expand': '扩写',
+            'Condense': '缩写',
+            'Rewrite Style': '重写风格',
+            'Custom': '自定义',
+            'Make the text': '使文本',
+            'kinda': '有点',
+            'Adjust': '调整',
+            'a little': '稍微',
+            'not much': '微量',
+            'quite a bit': '较多',
+            'a lot': '大量',
+            'very': '极强',
+            'Rewrite to match the style.': '重写以匹配该风格。',
+            'Context Management': '上下文管理',
+            'Enter a term': '输入词条',
+            'Enter a custom instruction.': '输入自定义指令。',
+            'Search for an entry': '搜索条目',
+            'Enabled': '已启用',
+            'Type here and hit enter to add a stop sequence': '在此输入并按回车键以添加停止序列',
+            'Enter the text you want to bias': '输入您想要偏置的文本',
+            'Because the AI only has so much Context it can see, remember not to give it too many details at once. Less can be more!': '因为 AI 能看到的上下文有限，切记不要一次性提供过多细节。少即是多！',
+            'option GLM 4.6, selected.': '已选中选项 GLM 4.6。',
+            'Llama 3 Erato': 'Llama 3 Erato',
+            'Our largest and most formidable, built with Meta Llama 3 70B.': '我们最大、最强大的模型，基于 Meta Llama 3 70B 构建。',
+            'Kayra': 'Kayra',
+            'A fierce contender, now second best, crafted from the ground up.': '强有力的竞争者，目前位居第二，从零开始打造。',
+            'Clio': 'Clio',
+            'Our veteran powerhouse, still fast and reliable.': '我们的老牌主力，依然快速可靠。',
+            'Euterpe': 'Euterpe',
+            'A legacy model - use is no longer recommended.': '旧版模型 - 不再推荐使用。',
+            'Krake': 'Krake',
+            'Previously powerful, now legacy model - use is no longer recommended.': '曾经强大，现为旧版模型 - 不再推荐使用。',
+            'Sigurd': 'Sigurd',
+            'Genji': 'Genji',
+            'A legacy Japanese language model - use is no longer recommended.': '旧版日语模型 - 不再推荐使用。',
+            'Snek': 'Snek',
+            'A legacy python code model - use is no longer recommended.': '旧版 Python 代码模型 - 不再推荐使用。',
+            'Lorebook': '世界书',
+            'Entries': '条目',
+            'Manual': '手动',
+            'Entry': '条目',
+            'Category': '分类',
+            'Welcome to': '欢迎来到',
+            'the Lorebook!': '世界书！',
+            'The perfect place to flesh out your story’s world, events, locations, characters, and environments. There are lots of settings, but you only need to worry about the Entry tab if you’re just getting started.': '这里是丰富故事世界观、事件、地点、角色和环境的完美之地。虽然设置很多，但如果你刚刚起步，只需关注“条目”标签即可。',
+            'Simply place the info about your subject in the Entry Text field, and specify what Activation Keys should be looked for to show the entry to the AI.': '只需将主题信息放入“条目文本”字段，并指定用于向 AI 激活该条目的“激活关键词”。',
+            'You can get started by clicking the “+ Entry” button.': '你可以点击“+ 条目”按钮开始。',
+            'Create an Entry': '创建条目',
+            '0 Entries Selected': '已选择 0 个条目',
+            'Select All': '全选',
+            'Negation': '否定',
+            'There\'s a fun phenomenon known as the \'pink elephant\' - try not to think about one, and it\'s there! AI works the same way, so try not to use words you don\'t want to see brought up.': '有一个有趣的现象叫做“粉红大象”——你越不想它，它就越会出现！AI 也是如此，所以尽量不要使用你不想看到的词。',
+            'New Lorebook Entry': '新世界书条目',
+            'Entry has no keys.': '条目没有关键词。',
+            'Disabled': '已禁用',
+            'Advanced Conditions': '高级条件',
+            'Entry Text': '条目文本',
+            'Generator': '生成器',
+            'The following text will be referenced when the Keys are activated.': '当关键词被激活时，将引用以下文本。',
+            '0 Tokens': '0 Tokens',
+            'Activation Keys': '激活关键词',
+            'Activates the entry when found within the recent story.': '在最近的故事中找到时激活该条目。',
+            'Always On': '始终开启',
+            'No Keys set.': '未设置关键词。',
+            'No Category': '无分类',
+            'Change Settings': '更改设置',
+            'Generation Type': '生成类型',
+            'History': '历史记录',
+            'Input Text': '输入文本',
+            'Add Context (advanced)': '添加上下文 (高级)',
+            'Generate': '生成',
+            'Generation History': '生成历史',
+            'New Category': '新分类',
+            '0 entries': '0 个条目',
+            'Settings': '设置',
+            'Lorebook Entry Header': '世界书条目标题',
+            'The text entered here will be automatically placed above any entry in this category.': '此处输入的文本将自动放置在分类下任何条目的上方。',
+            'Add Condition': '添加条件',
+            'No advanced conditions configured. Click \'Add Condition\' to create one.': '未配置高级条件。点击“添加条件”以创建一个。',
+            'Note:': '注意：',
+            'Multiple top-level conditions use OR logic. The entry will activate if any condition evaluates to true.': '多个顶级条件使用 OR (或) 逻辑。只要有任何条件为真，条目就会激活。',
+            'True': '始终生效',
+            'Keyword Match': '关键词匹配',
+            'Lore Entry Active': '设定条目已激活',
+            'Random Chance': '随机概率',
+            'Numeric Comparison': '数值比较',
+            'String Comparison': '字符串比较',
+            'AND Group': '满足全部条件',
+            'OR Group': '满足任一条件',
+            'NOT': '条件取反',
+            'Always evaluates to true': '始终判定为真',
+            'This is where you put what you want to be generated. Proper nouns like \'Geometry Incorporated\' or short descriptions like \'an enthusiastic merchant\' work best.': '在这里输入你想要生成的内容。专有名词（如“几何公司”）或简短描述（如“热情的商人”）效果最好。',
+            'You can add tags in parenthesis to further describe the entry, e.g. \'Stalagmal (prison, space)\'': '可以在括号中添加标签以进一步描述条目，例如“Stalagmal (监狱, 太空)”。',
+            'General': '通用',
+            'Person': '人物',
+            'Place': '地点',
+            'Thing': '物品',
+            'Life': '生命',
+            'Faction': '派系',
+            'Role': '角色',
+            'Concept': '概念',
+            'Include Memory, Author\'s Note, the most recent story text (~2500 characters), or other Lorebook entries in context so that information can be used in generating entries.': '在上下文中包含记忆、作者语、最近的故事文本（约2500个字符）或其他世界书条目，以便利用这些信息生成条目。',
+            'Influences the generator towards generating a specific type of entry. A custom type can be set by typing with the dropdown open and hitting enter.': '引导生成器生成特定类型的条目。可以在下拉菜单打开时输入自定义类型并按回车键设置。',
+            'AI Prompting': 'AI 提示词',
+            'Show and tell: provide the AI all kinds of prompts to get interesting results! Use everything from recipes to chat logs!': '尽情展示：为 AI 提供各种提示以获得有趣的结果！从食谱到聊天记录都可以使用！',
+            'Let the AI fill in the blanks for you! Choose the type of entry from the list, enter what you want to generate, and hit generate. You can also have the AI add to text written in the Lore entry just like in the Story.': '让 AI 为你填补空白！从列表中选择条目类型，输入想生成的内容，然后点击生成。你也可以像在故事中一样，让 AI 接着世界书条目里的文本继续写。',
+            'Advanced conditions allow more complex logic for when this lore entry should activate.': '高级条件允许你为世界书条目何时激活设置更复杂的逻辑。',
+            'The text here will be searched for Lorebook activation keys, and the matching Lore placed in context.': '将在该处文本中搜索世界书激活关键词，并将匹配的设定放入上下文。',
+            'A Lorebook entry is activated and its text placed in context whenever one of its keys is found in the recent story. Keys are case-insensitive.': '只要在最近的故事中找到其中一个关键词，就会激活该世界书条目并将其文本放入上下文中。关键词不区分大小写。',
+            'Keys that begin and end with \'/\' are evaluated as regex. These regex keys are case-sensitive and support the following flags: i, s, m, and u.': '以“/”开头和结尾的关键词将被视为正则表达式。这些正则关键词区分大小写，并支持以下标志：i、s、m 和 u。',
+            'Keys that begin and end with "/" are evaluated as regex. These regex keys are case-sensitive and support the following flags: i, s, m, and u.': '以“/”开头和结尾的关键词将被视为正则表达式。这些正则关键词区分大小写，并支持以下标识：i, s, m, u。',
+            'a recurring festival, Battle of Ryris (coup, demons)...': '一场周期性的祭典，莱瑞斯之战（政变，恶魔）...',
+            'No advanced conditions configured. Click "Add Condition" to create one.': '未配置高级条件。点击“添加条件”来创建一个。',
+            'Prose': '散文',
+            'Text that follows standard writing conventions is referred to as \'prose\'. The type of prose can vary—poetic stanzas, haikus, and so on. The AI will try to continue whatever you give it!': '遵循标准写作规范的文本称为“散文”。散文的类型可以多种多样——诗节、俳句等。AI 会尝试接续你给出的任何内容！',
+            'Shows the last 50 outputs. Cleared on page refresh.': '显示最后 50 次输出。页面刷新后清空。',
+            'Dock active tab to side': '将活动标签页固定到侧边',
+            'Enter Lorebook Keys to Search': '输入世界书关键词进行搜索',
+            'Enter default entry header...': '输入默认条目标题...',
+            'Type information about the entry here.': '在此处输入关于该条目的信息。',
+            'Type a key here and hit enter to save it': '在此输入关键词并按回车键保存',
+            'Search for an entry': '搜索条目',
+            'Enter your prompt here...': '在此输入您的提示词...',
+            'This is where you put what you want to be generated. Proper nouns like "Geometry Incorporated" or short descriptions like "an enthusiastic merchant" work best.': '这是您填写希望生成内容的地方。使用专有名词（如“Geometry Incorporated”）或简短描述（如“一位热情的商人”）效果最佳。',
+            'You can add tags in parenthesis to further describe the entry, e.g. "Stalagmal (prison, space)"': '您可以在括号内添加标签以进一步描述该条目，例如：“Stalagmal (监狱, 太空)”',
+            'History empty': '历史记录为空',
+            'always on': '始终开启',
+            'Press again to confirm deletion': '再次点击确认删除',
+            'Perspective': '视角 (人称)',
+            'If a story is told from the author\'s perspective, it is first person. Second person is when \'you\' tell the story, and third person is telling you about other people. Try not to mix them up in the same story!': '如果故事从作者的角度讲述，那就是第一人称。第二人称是“你”在讲故事，第三人称则是向你讲述别人的事。尽量不要在同一个故事中混用它们！',
+            'No Entry selected.': '未选择条目。',
+            'Select an Entry from the left to edit it.': '从左侧选择一个条目进行编辑。',
+            'Delete Category?': '删除分类？',
+            'This cannot be reversed.': '此操作无法撤销。',
+            'Delete Containing Entries': '删除包含的条目',
+            'Deleting the category will also delete all entries within it.': '删除分类也将删除其中的所有条目。',
+            'Deleting the category will move all entries out of the category.': '删除分类会将所有条目移出该分类。',
+            'Delete it!': '删除它！',
+            'I changed my mind.': '我改变主意了。',
+            'Tense': '时态',
+            'Remember to keep your tense consistent! Grammatically incorrect inputs might confuse the AI and produce lower quality outputs.': '记住保持时态一致！语法错误的输入可能会使 AI 感到困惑并降低输出质量。',
+            'Unfinished Sentences': '未完成的句子',
+            'Because the AI continues off the last thing, you can leave sentences unfinished for unexpected results. Try writing things like \'The man was\', to have the AI describe the subject.': '因为 AI 会接着最后的内容继续，你可以留下未完成的句子以获得意想不到的结果。尝试写像“那个男人是”这样的内容，让 AI 来描述对象。',
+            'As Scenario': '作为场景',
+            'As Plaintext': '作为纯文本',
+            'To Clipboard': '复制到剪贴板',
+            'As Image': '作为图像',
+            'Delete Story?': '删除故事？',
+            'Saving...': '保存中...',
+            'Story Statistics': '故事统计',
+            'Get a perspective on your writing.': '全面了解你的写作情况。',
+            'Data': '数据',
+            'Sections': '段落',
+            'Lorebook Entries': '世界书条目',
+            'Ephemeral Entries': '临时条目',
+            'Writing': '写作',
+            'User': '用户',
+            'AI': 'AI',
+            'Edits': '编辑',
+            'Paragraphs': '段落',
+            'Words': '字数 / 词数',
+            'Sentences': '句子',
+            'Generate Additional Stats': '生成额外统计数据',
+            'Structure': '结构',
+            'Current Step': '当前步数',
+            'Furthest Step': '最远步数',
+            'Dead Ends': '死胡同分支',
+            'No Retry Streak': '未重试连续步数',
+            'Longest Abandoned Branch': '最长废弃分支',
+            'Most Retries': '最多重试次数',
+            'Average Retries': '平均重试次数',
+            'NaN': 'NaN',
+            'Most Used Words': '最常用词汇',
+            'WARNING: The following options are experimental and could result in permanent corruption of your story. Creating a backup first is heavily advised.': '警告：以下选项处于实验阶段，可能会导致你的故事永久损坏。强烈建议先创建备份。',
+            'Trim Story': '修剪故事',
+            'Flatten Story': '扁平化故事',
+            'Reset to Prompt': '重置为提示词',
+            'Trim your Story?': '修剪你的故事？',
+            'Are you sure you want to trim the history of \'New Story\'?': '确定要修剪“新故事”的历史记录吗？',
+            'This will delete all story branches.': '这将删除所有故事分支。',
+            'Trim it!': '修剪吧！',
+            'Flatten your Story?': '扁平化你的故事？',
+            'Are you sure you want to flatten \'New Story\'?': '确定要扁平化“新故事”吗？',
+            'This will delete its entire history.': '这将删除它的整个历史记录。',
+            'Flatten it!': '扁平化！',
+            'Reset your Story to Prompt?': '将故事重置为提示词？',
+            'Are you sure you want to reset \'New Story\' to its prompt?': '确定要将“新故事”重置为初始提示词吗？',
+            'This will delete every input/output up to now.': '这将删除至今所有的输入/输出。',
+            'Reset it!': '重置！',
+            'Dialogue': '对话',
+            'Remember to close off speech with quotation marks, or the AI may confuse when the dialogue is supposed to end! Similarly, specifying a speaker helps the AI stay on-track with who is saying what.': '记得用引号将对话闭合，否则 AI 可能会搞不清对话该在哪结束！同样，指定说话者有助于 AI 准确把握是谁在说话。',
+            'Excludes pronouns, conjunctions, prepositions, articles, and determiners': '排除代词、连词、介词、冠词和限定词',
+            'DO': '行动',
+            'SAY': '说话',
+            'What do you want to do?': '你想做什么？',
+            'What do you want to say?': '你想说什么？',
+            'Telepathy': '心灵感应',
+            'Want to talk non-verbally? That kind of communication can be defined with different <formatting> symbols rather than quotation marks.': '想要进行非语言交流吗？这种交流可以用不同的 <格式化> 符号（而不是引号）来定义。',
+            'Message Scaffolding & System Prompt': '消息脚手架与系统提示词',
+            'tokens (': 'Tokens (',
+            'Context Viewer': '上下文查看器',
+            '(max tokens [0]\n                     - output length [256]\n                    \n                     - continue to sentence end allowance [40])': '(最大 Token [0]\n                     - 输出长度 [256]\n                    \n                     - 句子结尾保留余量 [40])',
+            'Previous Stage': '上一个阶段',
+            'Next Stage': '下一个阶段',
+            'Show non-activated entries': '显示未激活的条目',
+            'Stage': '阶段',
+            'Order': '顺序',
+            'Identifier': '标识符',
+            'Inclusion': '包含状态',
+            'Reason': '原因',
+            'Reserved': '保留',
+            'Trim Type': '修剪类型',
+            'Included Phrase Bias Groups': '包含的词组偏置组',
+            'Number of Included Phrase Bias Groups': '包含的词组偏置组数量',
+            'Response:': '响应：',
+            'Text': '文本',
+            'Token IDs': 'Token IDs',
+            'Tokens:': 'Tokens：',
+            'Characters:': '字符数：',
+            'Building Context...': '构建上下文中...',
+            'The identifier for the context entry. Lorebook entries will use their display name.': '上下文条目的标识符。世界书条目将使用它们的显示名称。',
+            'Whether or not the entry was included in the context or not. A partially included entry is one that was trimmed.': '该条目是否包含在上下文中。部分包含的条目是经过修剪的。',
+            'The reason the entry was included or excluded from the context.': '条目被包含或被排除在上下文之外的原因。',
+            'If the entry was included because it was a Lorebook entry activated by a key the key will be shown here.': '如果条目是因为设定的关键词激活而被包含的，关键词将显示在这里。',
+            'The number of tokens that were reserved by the entry.': '该条目保留的 Token 数量。',
+            'The number of tokens that were used by the entry.': '该条目实际使用的 Token 数量。',
+            'The total of this column may not be the same as the length of the resulting context.': '此列的总和可能与最终生成的上下文长度不同。',
+            'How the entry was trimmed to be able to fit it into the context.': '为了适应上下文，该条目是如何被修剪的。',
+            'The priority used when trimming is no trim > newline > sentence > token.': '修剪时的优先级为：不修剪 > 换行 > 句子 > Token。',
+            'Scene Change': '场景切换',
+            'The dinkus (***) is used to tell the AI when to change scenes. You can also use an asterism (⁂) to tell it to start a whole new story!': '章节分隔符 (***) 用于告诉 AI 何时切换场景。你也可以使用星号 (⁂) 告诉它开始一个全新的故事！',
+            'Just: Transformed context to message format.': '仅仅是：将上下文转换为消息格式。',
+            'not included': '未包含',
+            'no text': '无文本',
+            'A/N': '作者语 (A/N)',
+            'included': '已包含',
+            'default': '默认',
+            'As an Aside': '旁白',
+            'You can use parentheses to give an aside in dialogue.': '在对话中，你可以使用括号添加旁白。',
+            'System Prompt': '系统提示词',
+            'The system prompt is the initial system message given to the model. Leave blank for the default system message.': '系统提示词是提供给模型的初始系统消息。留空将使用默认系统消息。',
+            'Reset to Default': '重置为默认',
+            'Copy Default': '复制默认内容',
+            'Prefill': '预填充',
+            'The prefill is inserted at the beginning of the most recent assistant message. Leave blank to use the default prefill.': '预填充内容将被插入到最近一条助手消息的开头。留空将使用默认预填充。',
+            'New': '新建',
+            'Account Scripts': '账户级脚本',
+            'loaded for all stories': '已为所有故事加载',
+            'No Scripts': '无脚本',
+            'Story Scripts': '故事级脚本',
+            'loaded for this story': '仅为此故事加载',
+            'Select a script, create a new one, or import one.': '选择一个脚本、创建一个新脚本或导入一个脚本。',
+            'Where do you want to add this script?': '你想将这个脚本添加到哪里？',
+            'To My Account': '到我的账户',
+            'Loaded for all stories.': '为所有故事加载。',
+            'To This Story': '到这个故事',
+            'Loaded only for this story.': '仅为当前故事加载。',
+            'New User Script': '新用户脚本',
+            'Unknown': '未知',
+            'Lock': '锁定',
+            'Enable': '启用',
+            'Info': '信息',
+            'Code': '代码',
+            'Config': '配置',
+            'Permissions': '权限',
+            'Storage': '存储',
+            'Logs': '日志',
+            'Diagnostics': '诊断',
+            'This script is disabled. If you want to enable it, click on the dot next to the script name in the sidebar.': '此脚本已禁用。如果想要启用，请点击侧边栏中脚本名称旁边的圆点。',
+            'Script Name': '脚本名称',
+            'Description': '描述',
+            'Memory Limit (MB, max 128)': '内存限制 (MB, 最大 128)',
+            'Script Information': '脚本信息',
+            'Created:': '创建于:',
+            'Last Updated:': '最后更新:',
+            'Script ID:': '脚本 ID:',
+            'Configuration Schema': '配置 Schema (模式)',
+            'Add Config': '添加配置',
+            'Configuration Values': '配置值',
+            'Save Config': '保存配置',
+            'Reset to Defaults': '重置为默认值',
+            'No Configuration Defined': '未定义配置',
+            'Add configurations with the \'Add Config\' button above.': '使用上方的“添加配置”按钮添加配置。',
+            'RPG Formatting': 'RPG 格式',
+            'Horizontal line (─), not to be confused with a dash, may be used for MMORPG-styled skills and statistics.': '水平线 (─)（不要与破折号混淆）可用于 MMORPG 风格的技能和统计数据。',
+            'My Script': '我的脚本',
+            'Are you sure you want to delete this script? This action cannot be undone.': '确定要删除这个脚本吗？此操作无法撤销。',
+            'Total': '总计',
+            'Diagnostics: New User Script': '诊断: 新用户脚本',
+            'Poetry and Lyrics': '诗歌与歌词',
+            'The em space ( ) is used on a newline when creating poetry or lyrics. Em space is different to the en space and the regular space and makes a big difference!': '创作诗歌或歌词时，新行使用全角空格 ( )。全角空格不同于半角空格和普通空格，它会产生很大的区别！',
+            'Set a bias on specific tokens to increase or decrease their chance of being generated. Surround with [square brackets] to input token ids (tokenizer specific). If a sequence of tokens is given, only the first will have the bias applied.': '对特定 Token 设置偏置，以增加或减少它们生成的概率。使用 [方括号] 包含输入的 Token ID（取决于分词器）。如果输入了 Token 序列，则只对第一个 Token 应用偏置。',
+            'No Group Selected': '未选择组',
+            'Enable or disable this phrase group.': '启用或禁用此短语组。',
+            'Cuts generation short upon reaching a specified string.': '在达到指定字符串时中断生成。',
+            'Prompt': '提示词',
+            'Quotations and Excerpts': '引用和摘录',
+            'Use an en space ( ) at the beginning of a newline to effectively mark it as a quotation or excerpt. This is different to both em space and the regular space!': '在新行的开头使用半角空格 ( ) 即可将其标记为引用或摘录。这与全角空格和普通空格都不同！',
+            'Keeps this many tokens, and deletes the rest.': '保留这么多个 Token，并删除其余的。',
+            'Adds the largest token probabilities until the sum reaches this value, then deletes the leftover tokens. Higher settings preserve more tokens.': '累加最大的 Token 概率直到总和达到该值，然后删除剩余的 Token。设置越高，保留的 Token 越多。',
+            'Samplers': '采样器',
+            'You can reorder samplers here.': '你可以在这里对采样器重新排序。',
+            'Disabled samplers will be hidden from the sidebar.': '被禁用的采样器将在侧边栏中隐藏。',
+            'Temperature (Randomness)': 'Temperature (温度/随机性)',
+            'disable': '禁用',
+            'Top-K Sampling': 'Top-K 采样',
+            'Nucleus Sampling': 'Nucleus (核) 采样',
+            'Min-P': 'Min-P',
+            '(disabled)': '(已禁用)',
+            'enable': '启用',
+            'Applies a static penalty to the generation of tokens that appear within the Repetition Penalty Range.': '对出现在“重复惩罚范围”内的 Token 的生成应用静态惩罚。',
+            'Applies a penalty to the generation of tokens based on the number of occurrences of that token within the Repetition Penalty Range.': '基于该 Token 在“重复惩罚范围”内出现的次数，对其生成应用惩罚。',
+            'World Constants': '世界常量',
+            'If your world has something specific about it, you can inform the AI of this distinction in your Lorebooks.': '如果你的世界有某些特别之处，你可以通过世界书将此差异告知 AI。',
+            'Up to Date': '紧跟潮流',
+            'The AI is trained in some recent events, popular fiction and even celebrities. Specifics may need further prompting, but you should find it quite capable of broad strokes!': 'AI 接受了一些近期事件、流行小说甚至名人的训练。具体细节可能需要进一步的提示，但你会发现它在把握大方向上非常有能力！',
+            'Choose where a Story is kept by toggling the Remote Storage option in': '通过切换远程存储选项来选择故事的保存位置，在',
+            'Settings. Be aware that local data can be cleared with your browser cache. Back up your Stories regularly!': '设置中。请注意，清除浏览器缓存可能会清除本地数据。请定期备份你的故事！',
+            'Bad Connection Story Conflicts': '由于网络不佳导致的故事冲突',
+            'If you have too many Story Conflicts pop up due to a bad connection you can disable the pop-up in': '如果因为网络连接不佳导致弹出过多的“故事冲突”，你可以在以下位置禁用该弹窗：',
+            'Story Backup': '故事备份',
+            'Download all Stories regularly in': '建议定期下载所有故事在',
+            ', especailly if you use Local Storage and your browser cache get cleared, or if you lose access to your account.': '，特别是当你使用本地存储并清除了浏览器缓存，或是失去了账户访问权限时。'
+        };
+
+        const regexI18n = [
+            { regex: /^Are you sure you want to delete "(.*?)"\?$/, replacement: '确定要删除 "$1" 吗？' },
+            { regex: /^Are you sure you want to delete '(.*?)'\?$/, replacement: '确定要删除 "$1" 吗？' },
+            { regex: /^Are you sure you want to delete the category "(.*?)"\?$/, replacement: '确定要删除分类 "$1" 吗？' },
+            { regex: /^Are you sure you want to delete the category '(.*?)'\?$/, replacement: '确定要删除分类 "$1" 吗？' },
+            { regex: /^Are you sure you want to trim the history of "(.*?)"\?$/, replacement: '确定要删除 "$1" 的历史记录吗？' },
+            { regex: /^Are you sure you want to trim the history of '(.*?)'\?$/, replacement: '确定要删除 "$1" 的历史记录吗？' },
+            { regex: /^Are you sure you want to flatten "(.*?)"\?$/, replacement: '确定要扁平化 "$1" 吗？' },
+            { regex: /^Are you sure you want to flatten '(.*?)'\?$/, replacement: '确定要扁平化 "$1" 吗？' },
+            { regex: /^Are you sure you want to reset "(.*?)" to its prompt\?$/, replacement: '确定要将 "$1" 重置为初始提示词吗？' },
+            { regex: /^Are you sure you want to reset '(.*?)' to its prompt\?$/, replacement: '确定要将 "$1" 重置为初始提示词吗？' }
+        ];
+
+        function translateNode(node) {
+            let element = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+            if (element && element.closest) {
+                if (element.closest('[contenteditable="true"], textarea, input, script, style, noscript')) {
+                    if (node.nodeType === Node.ELEMENT_NODE && (node.tagName === 'INPUT' || node.tagName === 'TEXTAREA')) {
+                        if (node.placeholder && i18n[node.placeholder]) {
+                            node.placeholder = i18n[node.placeholder];
+                        }
+                    }
+                    return;
                 }
             }
-        });
 
-        const children = node.querySelectorAll(attributesToTranslate.map(attr => `[${attr}]`).join(', '));
-        children.forEach(child => {
-            attributesToTranslate.forEach(attr => {
-                if (child.hasAttribute(attr)) {
-                    const val = child.getAttribute(attr);
-                    let replacedValue = val.replace(regex, (match) => activeTranslationMap[match]);
-                    if (val !== replacedValue) {
-                        child.setAttribute(attr, replacedValue);
+            if (node.nodeType === Node.TEXT_NODE) {
+                let originalText = node.nodeValue;
+                if (!originalText) return;
+                let trimmedText = originalText.trim();
+                if (!trimmedText) return;
+
+                // 精确匹配
+                if (i18n[trimmedText]) {
+                    let targetTranslation = i18n[trimmedText];
+                    if (originalText.includes(targetTranslation)) return;
+                    node.nodeValue = originalText.replace(trimmedText, targetTranslation);
+                    return;
+                }
+
+                // 正则匹配 (处理带有动态变量的句子)
+                for (let i = 0; i < regexI18n.length; i++) {
+                    let item = regexI18n[i];
+                    if (item.regex.test(trimmedText)) {
+                        let newText = trimmedText.replace(item.regex, item.replacement);
+                        node.nodeValue = originalText.replace(trimmedText, newText);
+                        return;
                     }
                 }
-            });
-        });
-    }
-
-    function translateNode(node) {
-        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-        let currentNode;
-        while (currentNode = walker.nextNode()) {
-            replaceText(currentNode);
+            }
+            else if (node.nodeType === Node.ELEMENT_NODE) {
+                if (node.placeholder && i18n[node.placeholder]) {
+                    node.placeholder = i18n[node.placeholder];
+                }
+                if (node.title && i18n[node.title]) {
+                    node.title = i18n[node.title];
+                }
+                Array.from(node.childNodes).forEach(translateNode);
+            }
         }
-        translateAttributes(node);
-    }
 
-    let observer = null;
-    let isTranslating = false;
+        let pendingMutations = [];
+        let isTranslating = false;
 
-    function startTranslation() {
-        translateNode(document.body);
-        modifyPageTitle(window.location.pathname);
+        const observer = new MutationObserver((mutations) => {
+            if (isDestroyed) return;
+            pendingMutations.push(...mutations);
+            if (!isTranslating) {
+                isTranslating = true;
+                requestAnimationFrame(processMutations);
+            }
+        });
 
-        observer = new MutationObserver(mutations => {
-            if (isTranslating) return;
-            
-            isTranslating = true;
-            observer.disconnect(); 
+        function processMutations() {
+            if (isDestroyed) return;
+            const mutationsToProcess = pendingMutations;
+            pendingMutations = [];
+            observer.disconnect();
 
-            mutations.forEach(mutation => {
-                if (mutation.addedNodes.length > 0) {
-                    mutation.addedNodes.forEach(node => {
-                        if (node.nodeType === Node.ELEMENT_NODE) {
+            for (let i = 0; i < mutationsToProcess.length; i++) {
+                const mutation = mutationsToProcess[i];
+                if (mutation.type === 'childList') {
+                    for (let j = 0; j < mutation.addedNodes.length; j++) {
+                        let node = mutation.addedNodes[j];
+                        if (node.nodeType === Node.ELEMENT_NODE || node.nodeType === Node.TEXT_NODE) {
                             translateNode(node);
-                        } else if (node.nodeType === Node.TEXT_NODE) {
-                            replaceText(node);
-                        }
-                    });
-                }
-                if (mutation.type === 'characterData' && mutation.target.parentNode) {
-                    replaceText(mutation.target);
-                }
-                if (mutation.type === 'attributes') {
-                    const val = mutation.target.getAttribute(mutation.attributeName);
-                    if (val) {
-                        let replacedValue = val.replace(regex, (match) => activeTranslationMap[match]);
-                        if (val !== replacedValue) {
-                            mutation.target.setAttribute(mutation.attributeName, replacedValue);
                         }
                     }
+                } else if (mutation.type === 'characterData') {
+                    translateNode(mutation.target);
+                } else if (mutation.type === 'attributes') {
+                    let node = mutation.target;
+                    if (mutation.attributeName === 'placeholder' && node.placeholder && i18n[node.placeholder.trim()]) {
+                        node.placeholder = i18n[node.placeholder.trim()];
+                    }
+                    if (mutation.attributeName === 'title' && node.title && i18n[node.title.trim()]) {
+                        node.title = i18n[node.title.trim()];
+                    }
                 }
-            });
+            }
 
-            // 监听器中也补充了遗漏的深层属性监控
-            observer.observe(document.body, {
+            if (!isDestroyed) observe();
+            isTranslating = false;
+            if (pendingMutations.length > 0 && !isDestroyed) {
+                isTranslating = true;
+                requestAnimationFrame(processMutations);
+            }
+        }
+
+        function observe() {
+            if (!isDestroyed) observer.observe(document.body, {
                 childList: true,
                 subtree: true,
                 characterData: true,
                 attributes: true,
-                attributeFilter: ['placeholder', 'title', 'aria-label', 'data-placeholder', 'data-empty-text', 'value']
+                attributeFilter: ['placeholder', 'title']
             });
-            isTranslating = false;
-        });
-
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true,
-            characterData: true,
-            attributes: true,
-            attributeFilter: ['placeholder', 'title', 'aria-label', 'data-placeholder', 'data-empty-text', 'value']
-        });
-    }
-
-    // ==========================================
-    // 4. 监听 SPA 路由切换 (修复多页面切换不翻译问题)
-    // ==========================================
-    
-    let lastPathname = window.location.pathname;
-
-    function handleRouteChange() {
-        const currentPathname = window.location.pathname;
-        if (currentPathname !== lastPathname) {
-            lastPathname = currentPathname;
-            // 1. 网址变更时，重新匹配并更新词典库
-            updateDictionary();
-            // 2. 更新网页标题
-            modifyPageTitle(currentPathname);
-            // 3. 延迟一小段时间，等待新页面的 DOM 框架渲染出来后，手动触发一次全量大扫除翻译
-            setTimeout(() => {
-                if (document.body) {
-                    translateNode(document.body);
-                }
-            }, 500); // 500ms 延迟足以应对大部分框架的渲染
         }
+
+        // 初始运行
+        translateNode(document.body);
+        observe();
+
+        return {
+            destroy: () => {
+                isDestroyed = true;
+                observer.disconnect();
+                pendingMutations = [];
+            }
+        };
     }
 
-    // 拦截原生的路由跳转 API
-    const originalPushState = history.pushState;
-    history.pushState = function () {
-        originalPushState.apply(this, arguments);
-        handleRouteChange();
-    };
-
-    const originalReplaceState = history.replaceState;
-    history.replaceState = function () {
-        originalReplaceState.apply(this, arguments);
-        handleRouteChange();
-    };
-
-    // 监听浏览器的前进、后退按钮
-    window.addEventListener('popstate', handleRouteChange);
 
     // ==========================================
-    // 5. 脚本入口点
+    // 4. Image 页面汉化逻辑
     // ==========================================
-    
-    updateDictionary(); // 初始加载时分配词典
-    updateMenuText();
+    function runImageTranslation() {
+        let isDestroyed = false; // 用于控制销毁
 
-    const checkReady = setInterval(() => {
-        const readyElements = [
-            '.prompt-input-box-prompt',
-            'button.button',           
-            '.ProseMirror',            
-            'textarea', 
-            '.welcome-message',         
-            '[class*="Modal"]'          
+        const dict = {
+            'There are issues connecting to the backend right now, please check your connection or try again...': '当前连接后端出现问题，请检查您的网络连接或重试...',
+            'Anlas:': '代币:',
+            'Author': '作者',
+            'Not Subscribed': '未订阅',
+            'Account': '账户',
+            'Account Settings': '账户设置',
+            'Logout': '登出',
+            'Other': '其他',
+            'Quick Start Gallery': '快速开始画廊',
+            'Director Tools': '导演工具',
+            'Text Generation': '文本生成',
+            'Tokenizer': '分词器',
+            'Help': '帮助',
+            'Tutorial': '教程',
+            'Documentation': '文档',
+            'NovelAI Discord': '官方 Discord',
+            'Version': '版本',
+            'NAI Diffusion V4.5 Curated': 'NAI Diffusion V4.5 严选版',
+            'A version of our newest model trained on a curated subset of images. Recommended for streaming.': '使用精选图像子集训练的最新模型。推荐用于流式传输。',
+            'Base Prompt': '基础提示词',
+            'Undesired Content': '反向提示词',
+            'Prompt': '基础提示词',
+            'or': '或',
+            'Randomize': '随机化',
+            'Quality Tags Enabled': '已启用质量标签',
+            'Add a Base Img (Optional)': '添加基础图片',
+            'Character Prompts': '角色提示词',
+            'Customize separate characters.': '在此分别自定义不同角色。',
+            'Add Character': '添加角色',
+            'Vibe Transfer': '氛围转移',
+            'Change the image, keep the vision.': '改变图像，但保留原有的视觉氛围。',
+            'Precise Reference': '精确参考',
+            'Add a reference image for a character or style.': '为角色或整体风格添加参考图像。',
+            'Image Settings': '图像设置',
+            'Normal Portrait': '普通 肖像',
+            'Steps': '步数',
+            'Guidance': '提示词引导系数',
+            'Seed': '种子值',
+            'N/A': '无',
+            'Sampler': '采样器',
+            'Euler Ancestral': 'Euler Ancestral',
+            'Generate 1 Image': '生成 1 张图像',
+            'Anlas': '代币',
+            'Get Started': '开始使用',
+            'Get Inspiration from our quick start gallery!': '从快速开始画廊获取灵感！',
+            'Click an image to copy the prompt.': '点击图片以复制提示词。',
+            'Copied!': '已复制！',
+            'History': '生成历史',
+            'Download Image': '保存图像',
+            'Copy to Clipboard': '复制到剪贴板',
+            'Pin Image': '固定图像',
+            'Download ZIP': '打包至压缩包',
+            'Clear History': '清除历史记录',
+            'Enhance': '增强',
+            'Generate Variations': '生成变体',
+            'Upscale': '放大',
+            'Use as Base Image': '设为底图',
+            'Edit Image': '编辑图像',
+            'Draw an outline of your image.': '提取图像的轮廓线。',
+            'Revert your image to a sketch stage.': '将图像还原为草图阶段。',
+            'Turn your sketch or line art picture into something colorful. You can also guide your colorization with a prompt and even make slight modifications to the image.': '将草图或线稿变为彩色。您可以使用提示词引导上色风格，甚至对图像进行细微修改。',
+            'Remove backgrounds from images, leaving only the characters.': '去除图像背景，仅保留角色。',
+            'Change the expression of any given character.': '修改指定角色的面部表情。',
+            'Removes clutter like text, speech bubbles or other things drawn on top of the image.': '清除画面上的干扰物，如文字、对话气泡或覆盖在图像上的其他内容。',
+            'What do you want to do with this image?': '您想如何处理这张图片？',
+            'Image2Image': '图生图',
+            'Defry': '去燥',
+            'Prompt (Optional)': '提示词 (可选)',
+            'Happy': '快乐',
+            'Sad': '悲伤',
+            'Angry': '愤怒',
+            'Scared': '恐惧',
+            'Surprised': '惊讶',
+            'Tired': '疲倦',
+            'Excited': '兴奋',
+            'Nervous': '紧张',
+            'Thinking': '思考',
+            'Confused': '困惑',
+            'Shy': '羞涩',
+            'Disgusted': '厌恶',
+            'Smug': '得意',
+            'Bored': '无聊',
+            'Laughing': '大笑',
+            'Irritated': '恼怒',
+            'Aroused': '情欲',
+            'Embarrassed': '尴尬',
+            'Worried': '担心',
+            'Love': '示爱',
+            'Determined': '坚定',
+            'Hurt': '受伤',
+            'Playful': '俏皮',
+            'Anime Only. Start with a neutral emotion image.': '仅限动漫模式。请从一张表情中性的图像开始。',
+            'Learn More': '了解更多',
+            'Neutral': '中性',
+            'Transform your image.': '转换您的图像。',
+            'Enhance Image': '增强图像',
+            'Enhance!': '增强！',
+            'Upscale Amount': '放大倍数',
+            'Magnitude': '强度',
+            'Show Advanced': '显示高级设置',
+            'Strength': '强度',
+            'Noise': '噪声',
+            'Strength:': '强度:',
+            'Noise:': '噪声:',
+            'Draw Mask': '绘制遮罩',
+            'Erase Mask': '擦除遮罩',
+            'Focused': '聚焦',
+            'Area': '区域',
+            'Selection': '选择',
+            'Square Brush': '方形画笔',
+            'Focused Area Selection': '聚焦区域选择',
+            'Hide Advanced': '隐藏高级设置',
+            'Remove BG': '去除背景',
+            'Minimum Context Area:': '最小上下文区域:',
+            'Mask Color': '遮罩颜色',
+            'Mask Opacity:': '遮罩不透明度:',
+            'Border': '边框',
+            'Mask Pattern': '遮罩图案',
+            'Reference Strength': '参考强度',
+            'Information Extracted': '信息提取度',
+            'Fidelity:': '还原度:',
+            'Enabled': '已启用',
+            'Character & Style': '角色与风格',
+            'Character': '角色',
+            'Style': '风格',
+            'Erase': '擦除',
+            'Fill': '填充',
+            'Select': '选择',
+            'Lasso': '套索',
+            'Color Picker': '拾色器',
+            'Blur': '模糊',
+            'Clone': '克隆',
+            'Position': '位置',
+            'AI’s Choice': 'AI 选择',
+            'Slightly Weak': '稍弱',
+            'Weak': '弱',
+            'Even Weaker': '更弱',
+            'Very Weak': '极弱',
+            'Weakest': '最弱',
+            'Encoding required. This will cost': '需要编码。下次生成将消耗',
+            'on the next generation.': '。',
+            'Normalize Reference Strength Values': '归一化参考强度',
+            'Learn more here.': '点击此处了解更多。',
+            'This image has metadata!': '此图片包含元数据！',
+            'Did you want to import that instead?': '您是否想要导入这些数据？',
+            'Append': '追加',
+            'Import Metadata': '导入元数据',
+            'Click to edit a character.': '点击以编辑角色。',
+            'Done': '完成',
+            'Character Positions (Global)': '角色位置 (全局)',
+            'Adjust': '调整',
+            'Clean Imports': '清除后导入',
+            'Line Art': '线稿化',
+            'Sketch': '草图化',
+            'Colorize': '自动上色',
+            'Emotion': '表情修改',
+            'Declutter': '去杂物',
+            'Transform': '执行转换',
+            'Send to Director Tools': '发送至导演工具',
+            'Inpaint Image': '局部重绘',
+            'Free Trial': '免费试用',
+            '28/30 image generations remaining.': '还剩 28/30 次生成。',
+            'Seen enough?': '体验够了吗？',
+            'Check out our plans': '查看订阅计划',
+            'New': '全新',
+            'NAI Diffusion V4.5 Full': 'NAI Diffusion V4.5 完整版',
+            'Our newest and best model.': '我们最新、最强大的模型。',
+            'Legacy': '旧版',
+            'NAI Diffusion V4 Curated': 'NAI Diffusion V4 严选版',
+            'Our V4 model trained on a curated subset of images. No longer recommended for use.': '使用精选子集训练的 V4 模型。不再推荐使用。',
+            'NAI Diffusion V4 Full': 'NAI Diffusion V4 完整版',
+            'Our V4 model. No longer recommended for use.': '我们的 V4 模型。不再推荐使用。',
+            'NAI Diffusion Anime V3': 'NAI Diffusion 动漫 V3',
+            'Our previous model. No longer recommended for use.': '我们上一代模型。不再推荐使用。',
+            'NAI Diffusion Furry V3': 'NAI Diffusion 兽人 V3',
+            'Free': '免费',
+            'Added to the end of the prompt:': '已添加到提示词末尾：',
+            ', no text, best quality, very aesthetic, absurdres': ', 无文本, 最佳质量, 极具美感, 超高分辨率',
+            'You are currently using Anime mode.': '当前正在使用动漫模式。',
+            'The mode changes the tag suggestions and adds a dataset tag to the prompt. You can click the icon to switch.': '该模式会改变标签建议并在提示词中添加特定数据集标签。点击图标切换。',
+            'You are currently using Furry mode.': '当前正在使用兽人模式。',
+            'Detach Undesired Content': '分离反向提示词输入框',
+            'UC Preset Enabled': '已启用反向预设',
+            ', very aesthetic, masterpiece, no text, -0.8::feet::, rating:general': ', 极具美感, 杰作, 无文本, -0.8::feet::, 分级:常规',
+            'Prompt Settings': '提示词设置',
+            'Reattach Undesired Content': '合并反向提示词输入框',
+            'Settings': '设置',
+            'Prompt Chunks': '提示词分块',
+            'You': '你',
+            'must': '必须',
+            'enter': '输入',
+            'your': '你的',
+            'password': '密码',
+            'to': '来',
+            'access': '访问',
+            'this.': '这部分。',
+            'Enter Password': '输入密码',
+            'Add Quality Tags': '添加质量标签',
+            'Tags to increase quality will be prepended to the prompt.': '提升质量的标签将被自动添加到提示词开头。',
+            'The prompt will be used unmodified.': '提示词将原样使用。',
+            'Undesired Content Preset': '反向提示词预设',
+            'Heavy': '重度',
+            'Disable Tag Suggestions': '禁用标签建议',
+            'Highlight Emphasis': '高亮权重强度',
+            'Light': '轻度',
+            'Human Focus': '专注人类',
+            'None': '无',
+            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们重视您的隐私和安全。您的故事、设置预设和其他云端内容已在您的电脑上本地加密。为了解密内容，您必须输入之前设置的密码。',
+            'Password Required': '需要密码',
+            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
+            'Forgot Password': '忘记密码',
+            'Error unlocking keystore: Incorrect password.': '解锁错误：密码不正确。',
+            'No custom prompt chunks yet. Click + to add one.': '还没有自定义提示词块。点击 + 号添加。',
+            'Delete All': '全部删除',
+            'Draw': '绘制',
+            'Pen Size:': '画笔大小:',
+            'Save & Close': '保存并关闭',
+            'WebGL2': 'WebGL2',
+            'Female': '女性',
+            'Male': '男性',
+            'Normal': '普通',
+            'Portrait (832x1216)': '肖像 竖图',
+            'Landscape (1216x832)': '风景 横图',
+            'Square (1024x1024)': '正方形',
+            'Large': '大图',
+            'Portrait (1024x1536)': '肖像 竖图 (大)',
+            'Landscape (1536x1024)': '风景 横图 (大)',
+            'Square (1472x1472)': '正方形 (大)',
+            'Wallpaper': '壁纸',
+            'Portrait (1088x1920)': '壁纸 竖图',
+            'Landscape (1920x1088)': '壁纸 横图',
+            'Small': '小图',
+            'Portrait (512x768)': '肖像 竖图 (小)',
+            'Landscape (768x512)': '风景 横图 (小)',
+            'Square (640x640)': '正方形 (小)',
+            'Custom': '自定义尺寸',
+            'Number of Images': '生成数量',
+            'AI Settings': 'AI 设置',
+            'Steps:': '步数:',
+            'Prompt Guidance:': '提示词引导系数:',
+            'Variety+': '多样性+',
+            'Advanced Settings': '高级设置',
+            'Prompt Guidance Rescale:': '引导重缩放:',
+            'Noise Schedule': '噪声调度方案',
+            'karras': 'karras',
+            'Enable guidance only after body has been formed, to improve diversity and saturation of samples. May reduce relevance.': '仅在主体形成后启用引导，以提高多样性和饱和度。可能会降低提示词相关性。',
+            'Reset Settings': '重置设置',
+            'Reset all settings to default?': '重置所有设置吗？',
+            'Yes': '是',
+            'Cancel': '取消',
+            'Recommended': '推荐',
+            'Euler': 'Euler',
+            'DPM++ 2S Ancestral': 'DPM++ 2S Ancestral',
+            'DPM++ 2M SDE': 'DPM++ 2M SDE',
+            'DPM++ 2M': 'DPM++ 2M',
+            'DPM++ SDE': 'DPM++ SDE',
+            'karras (recommended)': 'karras (推荐)',
+            'exponential': '指数',
+            'polyexponential': '多项指数',
+            'Added to the beginning of the UC:': '已添加到反向提示词开头：',
+            'blurry, lowres, upscaled, artistic error, film grain, scan artifacts, worst quality, bad quality, jpeg artifacts, very displeasing, chromatic aberration, halftone, multiple views, logo, too many watermarks, negative space, blank page': '模糊, 低分辨率, 放大伪影, 错误, 颗粒, 瑕疵, 最差质量, 糟糕质量, jpeg伪影, 不美观, 色差, 水印, 负空间, 空白页',
+            'Tolerance:': '容差:',
+            'Intensity:': '强度:',
+            'Alt+Click to set source': 'Alt+点击 设置源',
+            'HSV Adjustment': '色彩调整',
+            'Hue:': '色相:',
+            'Saturation:': '饱和度:',
+            'Brightness:': '亮度:',
+            'Reset': '重置',
+            'Apply': '应用',
+            'Resize Canvas': '调整画布大小',
+            'Change Size': '修改尺寸',
+            '[w x h]': '[宽 x 高]',
+            'Crop to closest valid generation size': '裁剪到有效尺寸',
+            'Shift Edges': '偏移边缘',
+            'Resize': '调整尺寸',
+            'Pressure Sensitivity': '压感',
+            'Round': '圆形',
+            'Soft Round': '柔和圆形',
+            'Square': '方形',
+            'Ctrl+Click on an image to set your settings to the ones used to generate it (except for any init image).': 'Ctrl+点击 图像可还原生成参数（不包括底图）。',
+            'Decrisp': '去锐化',
+            'Auto': '自动',
+            'SMEA': 'SMEA',
+            'High resolution samplers will automatically be used above a certain image size.': '超过特定尺寸将自动启用高分辨率采样器。',
+            'Reduce artifacts caused by high prompt guidance values.': '减少高 CFG 引起的画面伪影。',
+            'DDIM': 'DDIM',
+            'Smea versions of samplers are modified to perform better at high resolutions.': 'SMEA 版本在生成高分辨率时表现更好。',
+            'DYN': '动态',
+            'SMEA Dyn variants of samplers are optimized to increase the coherence of higher resolution images without introducing the characteristic SMEA look. The effective range of resolutions is smaller than for regular SMEA.': 'SMEA Dyn 变体提高了高分辨率一致性，且观感更自然。有效范围比常规 SMEA 小。',
+            'Legacy Prompt Conditioning Mode (Not Recommended)': '旧版提示词条件模式 (不推荐)',
+            'User Settings': '用户设置',
+            'Image Generation': '图像生成',
+            'Interface': '界面',
+            'Theme': '主题',
+            'Support': '支持',
+            'Change Log': '更新日志',
+            'Current Tier': '当前等级',
+            'Manage': '管理',
+            'Pen Name': '笔名',
+            'Change': '修改',
+            'Delete Account': '删除账户',
+            'Request': '请求',
+            'Password': '密码',
+            'Change Password': '修改密码',
+            'Show Account ID': '显示账户 ID',
+            'Get Persistent API Token': '获取永久 API Token',
+            'Stay Informed.': '订阅资讯',
+            'Subscribe to our newsletter.': '订阅我们的新闻。',
+            'Subscribe': '订阅',
+            'Manage Cookie Preferences': '管理 Cookie',
+            'Default Storage Location': '默认存储位置',
+            'Local': '本地',
+            'Server': '服务器',
+            'New & imported stories will be saved locally and stored encrypted remotely.': '故事将保存在本地并在云端加密存储。',
+            'New & imported stories will be saved locally only.': '故事将保存只会保存在本地。',
+            'Exporting and backing up your stories is highly recommended, should your browser cache get cleared, or if you lose access to your account.': '强烈建议导出备份，以防浏览器缓存清除或账户丢失。',
+            'Download All Stories': '下载所有故事',
+            'Gift Key (Purchasing Disabled)': '礼物码',
+            'Gift key purchases have been removed indefinitely due to abuse.': '由于滥用，礼物码购买已禁用。',
+            'Purchase New Gift Key': '购买新兑换码',
+            'Key': '密钥',
+            'Date Created': '创建日期',
+            'Tier': '等级',
+            'Status': '状态',
+            'No Gift Keys yet!': '还没有兑换码！',
+            'Apply & Save Theme': '保存主题',
+            'Import': '导入',
+            'Export': '导出',
+            'Default Themes': '默认主题',
+            'NovelAI Dark': '黑暗',
+            'NovelAI Light': '明亮',
+            'Theme Editor': '主题编辑器',
+            'This is paragraph text. Nice!': '这是段落文本。',
+            'This is a prompt.': '这是一条提示词。',
+            'This is AI text.': '这是 AI 文本。',
+            'This is edited text.': '这是已编辑文本。',
+            'This is new user text.': '这是新输入文本。',
+            'This is highlighted text.': '这是高亮文本。',
+            'Header Font': '标题字体',
+            'Paragraph Font': '段落字体',
+            'Header': '标题',
+            'Paragraph': '段落',
+            'Warning/Error': '警告/错误',
+            'Foreground': '前景',
+            'Background': '背景',
+            'Dark Background': '深色背景',
+            'Input Background': '输入框背景',
+            'Low Intensity Color': '低亮度颜色',
+            'Mid Intensity Color': '中亮度颜色',
+            'High Intensity Color': '高亮度颜色',
+            'Custom CSS': '自定义 CSS',
+            'UI Language': '界面语言',
+            'English': 'English',
+            'Stream Image Generation': '流式生成',
+            'Intermediates of generating images will be streamed.': '生成过程图将实时显示。',
+            'Intermediates of generating images will not be streamed.': '生成过程图将不会显示。',
+            'Show Streamed Images Unprocessed': '显示原始流式图像',
+            'All streamed images will be shown unprocessed.': '流式图像将以原始状态显示。',
+            'In progress streamed images will be blurred and the first few steps will not be shown.': '生成中图像将被模糊处理。',
+            'Image Format for Generated Images': '图像格式',
+            'PNG': 'PNG',
+            'WebP (Lossless)': 'WebP',
+            'Automatic Download': '自动下载',
+            'Images will automatically download after generation.': '生成后自动下载。',
+            'Images will not automatically download after generation.': '生成后不自动下载。',
+            'Hide Quickstart Gallery': '隐藏画廊',
+            'The quickstart gallery will be hidden on the image generation page.': '画廊将被隐藏。',
+            'The quickstart gallery will be shown on the image generation page.': '画廊将显示。',
+            'Save': '保存',
+            'Enter your email address below to receive an account deletion confirmation email.': '输入邮箱以接收账户删除确认邮件。',
+            'Be aware that the deletion of your account results in the permanent loss of your stories and other content!': '请注意，删除账户将导致故事永久丢失！',
+            'Email': '电子邮箱',
+            'Send Deletion Confirmation Email': '发送确认邮件',
+            'To change your password, please enter your current password and then your new password.': '更改密码请先输入当前密码。',
+            'Custom CSS is experimental and some changes could cause the UI to become unusable. Future updates could change the default styles and make custom CSS set here not function as intended. Alt + Shift + P can be used to reset your theme to the default theme.': '自定义 CSS 是实验性功能，可能导致 UI 无法使用。按 Alt + Shift + P 可重置主题。'
+        };
+
+        const regexDict = [
+            { regex: /^option (.*?), selected\.$/, replacement: "已选中 $1。" },
+            { regex: /^You are currently focused on option (.*?) Select a (.*?) is focused , press Down to open the menu,$/, replacement: "当前聚焦于 $1。按向下键打开菜单。" },
+            { regex: /^You are currently focused on option (.*?) (\d+) results available\.(.*)$/, replacement: "聚焦于 $1，共有 $2 个结果。" },
+            { regex: /^This prompt is using (\d+) of the currently used (\d+) tokens\. Max total tokens: (\d+)$/, replacement: "提示词占用 $1 个 Token (当前共 $2)。限制: $3" },
+            { regex: /^(\d+) tokens out of (\d+) tokens used$/, replacement: "已使用 $1 / $2 Token" },
+            // --- 增强/放大设置中的动态数值 ---
+            { regex: /^Strength (.*)$/, replacement: "强度 $1" },
+            { regex: /^Noise (.*)$/, replacement: "噪声 $1" },
+            // --- 动态角色位置设置翻译 ---
+            { regex: /^Set Character (\d+)’s Position$/, replacement: "设置角色 $1 的位置" },
+            // --- 动态角色编号翻译 ---
+            { regex: /^Character (\d+)$/, replacement: "角色 $1" },
         ];
-        
-        if (readyElements.some(selector => document.querySelector(selector))) {
-            clearInterval(checkReady);
-            startTranslation();
+
+        const ignoreNodes = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'NOSCRIPT', 'CODE', 'INPUT']);
+
+        function translateTextNode(textNode) {
+            if (textNode.parentElement && (ignoreNodes.has(textNode.parentElement.nodeName) || textNode.parentElement.isContentEditable)) {
+                return;
+            }
+
+            let originalText = textNode.nodeValue;
+            if (!originalText) return;
+
+            let trimmedText = originalText.trim();
+            if (trimmedText === "") return;
+
+            if (dict[trimmedText]) {
+                textNode.nodeValue = originalText.replace(trimmedText, dict[trimmedText]);
+                return;
+            }
+
+            for (let i = 0; i < regexDict.length; i++) {
+                let item = regexDict[i];
+                if (item.regex.test(trimmedText)) {
+                    let newText = trimmedText.replace(item.regex, item.replacement);
+                    textNode.nodeValue = originalText.replace(trimmedText, newText);
+                    return;
+                }
+            }
         }
-    }, 500);
+
+        function translateAttributes(element) {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                let placeholder = element.getAttribute('placeholder');
+                if (placeholder && dict[placeholder.trim()]) {
+                    element.setAttribute('placeholder', dict[placeholder.trim()]);
+                }
+            }
+            if (element.hasAttribute('title')) {
+                let title = element.getAttribute('title');
+                if (title && dict[title.trim()]) {
+                    element.setAttribute('title', dict[title.trim()]);
+                }
+            }
+        }
+
+        function walkAndTranslate(root) {
+            if (root.nodeType === Node.ELEMENT_NODE) translateAttributes(root);
+
+            const walker = document.createTreeWalker(
+                root,
+                NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+                {
+                    acceptNode: function(node) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            translateAttributes(node);
+                            return NodeFilter.FILTER_SKIP;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                },
+                false
+            );
+
+            let node;
+            const textNodes = [];
+            while (node = walker.nextNode()) {
+                if (node.nodeType === Node.TEXT_NODE) textNodes.push(node);
+            }
+            for(let i=0; i<textNodes.length; i++) translateTextNode(textNodes[i]);
+        }
+
+        let pendingMutations = [];
+        let isTranslating = false;
+
+        const observer = new MutationObserver((mutations) => {
+            if (isDestroyed) return;
+            pendingMutations.push(...mutations);
+            if (!isTranslating) {
+                isTranslating = true;
+                requestAnimationFrame(processMutations);
+            }
+        });
+
+        function processMutations() {
+            if (isDestroyed) return;
+            const mutationsToProcess = pendingMutations;
+            pendingMutations = [];
+            observer.disconnect();
+
+            for (let i = 0; i < mutationsToProcess.length; i++) {
+                const mutation = mutationsToProcess[i];
+                if (mutation.type === 'childList') {
+                    for (let j = 0; j < mutation.addedNodes.length; j++) {
+                        let node = mutation.addedNodes[j];
+                        if (node.nodeType === Node.ELEMENT_NODE) walkAndTranslate(node);
+                        else if (node.nodeType === Node.TEXT_NODE) translateTextNode(node);
+                    }
+                } else if (mutation.type === 'characterData') {
+                    translateTextNode(mutation.target);
+                } else if (mutation.type === 'attributes') {
+                     translateAttributes(mutation.target);
+                }
+            }
+
+            if (!isDestroyed) observe();
+            isTranslating = false;
+            if (pendingMutations.length > 0 && !isDestroyed) {
+                isTranslating = true;
+                requestAnimationFrame(processMutations);
+            }
+        }
+
+        function observe() {
+            if (!isDestroyed) observer.observe(document.body, {
+                childList: true,
+                subtree: true,
+                characterData: true,
+                attributes: true,
+                attributeFilter: ['placeholder', 'title']
+            });
+        }
+
+        // 初始运行
+        walkAndTranslate(document.body);
+        observe();
+
+        return {
+            destroy: () => {
+                isDestroyed = true;
+                observer.disconnect();
+                pendingMutations = []; // 清空待处理队列
+            }
+        };
+    }
 
 })();
