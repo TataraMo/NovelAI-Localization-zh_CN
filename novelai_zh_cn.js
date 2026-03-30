@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      4.0
+// @version      4.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -9,8 +9,8 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
-// @updateURL    https://raw.githubusercontent.com/TataraMo/NovelAI-Localization-zh_CN/main/novelai_zh_cn.js
-// @downloadURL  https://raw.githubusercontent.com/TataraMo/NovelAI-Localization-zh_CN/main/novelai_zh_cn.js
+// @downloadURL https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.user.js
+// @updateURL https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.meta.js
 // @license      GPL-3.0-or-later
 // ==/UserScript==
 
@@ -99,9 +99,9 @@
         let isDestroyed = false; // 用于控制销毁
 
         const i18n = {
-            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们重视您的隐私和安全。您的故事、设置预设以及其他远程存储的内容都在您的电脑上进行了本地加密。为了解密您的内容并保护您的隐私，您必须输入之前设置的密码。',
+            'Enter your password': '请输入您的密码',
+            'Submit': '提交',
             'Password Required': '需要密码',
-            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
             'Forgot Password': '忘记密码',
             'Update': '更新',
             'Image Generation Canvas Update: New Tools, Better Performance, and 3D Support': '图像生成画布更新：新工具、更好的性能和 3D 支持',
@@ -284,7 +284,7 @@
             'Mid Intensity Color': '中强度颜色',
             'High Intensity Color': '高强度颜色',
             'Custom CSS': '自定义 CSS',
-            'Current Tier': '当前订阅层级',
+            'Current Tier': '当前订阅套餐',
             'Not Subscribed': '未订阅',
             'Manage': '管理',
             'Pen Name': '笔名',
@@ -308,7 +308,7 @@
             'Purchase New Gift Key': '购买新礼物密钥',
             'Key': '密钥',
             'Date Created': '创建日期',
-            'Tier': '层级',
+            'Tier': '订阅套餐',
             'Status': '状态',
             'No Gift Keys yet!': '还没有礼物密钥！',
             'Enter your email address below to receive an account deletion confirmation email.': '在下方输入您的电子邮件地址以接收账户删除确认邮件。',
@@ -432,18 +432,27 @@
             'Image Gen': '图像生成',
             'There are issues connecting to the backend right now, please check your connection or try again...': '目前连接后端服务器存在问题，请检查您的网络连接或稍后重试...',
             'Free Trial': '免费试用',
-            'text generations remaining.': '次文本生成次数剩余。',
             'You\'re getting': '您将获得',
             'tokens of AI context. Equivalent to our': 'Tokens 的 AI 上下文记忆。这等同于我们的',
-            'Scroll tier': '卷轴订阅层级',
-            'Seen enough?': '看够了吗？',
+            'Scroll tier': 'Scroll订阅套餐',
+            'Seen enough?': '体验如何？',
             'Check out our plans': '查看我们的订阅计划',
 
             // =========================================
-            // 追加的新翻译内容 (基于提取出的文本文件)
+            // 追加的新翻译内容
             // =========================================
+            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
+            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们非常重视您的隐私与安全。您的故事、设置预设以及其他远程存储的内容均已在您的计算机本地加密。为了解密内容并保护您的隐私，您必须输入此前设置的密码。',
+            'Before your text is sent to the AI, it gets turned into numbers in a process called tokenization.': '在您的文本发送给 AI 之前，它会通过一个名为“分词”（tokenization）的过程转化为数字。',
+            'These tokens are how the AI reads and interprets text.': '这些 Token 是 AI 阅读和理解文本的方式。',
+            'The average token is around 4 characters long, but many common words are their own token.': '平均一个 Token 约有 4 个字符长，但许多常用单词本身就是一个单独的 Token。',
+            'The tokenizer for your currently selected model is the GLM Tokenizer.': '您当前选择的模型所使用的分词器是 **GLM 分词器**。',
+            'Text Input': '文本输入',
+            'ID Input': 'ID 输入',
             'Stories - NovelAI': '故事 - NovelAI',
-            'Opus Tier': 'Opus 订阅层级',
+            'Opus Tier': 'Opus 订阅套餐',
+            'Scroll Tier': 'Scroll 订阅套餐',
+            'Tablet Tier': 'Tablet 订阅套餐',
             'Interactive Tutorials': '互动教程',
             'NovelAI Discord': '官方 Discord',
             'a few seconds ago': '几秒前',
@@ -681,7 +690,6 @@
             'Type information about the entry here.': '在此处输入关于该条目的信息。',
             'Type a key here and hit enter to save it': '在此输入关键词并按回车键保存',
             'Search for an entry': '搜索条目',
-            'Enter your prompt here...': '在此输入您的提示词...',
             'This is where you put what you want to be generated. Proper nouns like "Geometry Incorporated" or short descriptions like "an enthusiastic merchant" work best.': '这是您填写希望生成内容的地方。使用专有名词（如“Geometry Incorporated”）或简短描述（如“一位热情的商人”）效果最佳。',
             'You can add tags in parenthesis to further describe the entry, e.g. "Stalagmal (prison, space)"': '您可以在括号内添加标签以进一步描述该条目，例如：“Stalagmal (监狱, 太空)”',
             'History empty': '历史记录为空',
@@ -755,12 +763,18 @@
             'SAY': '说话',
             'What do you want to do?': '你想做什么？',
             'What do you want to say?': '你想说什么？',
+            'Turn off Tips?': '关闭提示？',
+            'Are you sure you want to disable tips for this session?': '您确定要在此会话中禁用提示吗？',
+            'You can re-enable or permanently turn off tips in the Interface Settings.': '您可以在界面设置中重新启用或永久关闭提示。',
+            'Turn off Tips for this session': '在此会话中关闭提示',
+            'Find in Story': '在故事中查找',
+            'Token Probabilities': 'Token 概率',
+            'Search Lorebook Entries': '搜索世界书条目',
             'Telepathy': '心灵感应',
             'Want to talk non-verbally? That kind of communication can be defined with different <formatting> symbols rather than quotation marks.': '想要进行非语言交流吗？这种交流可以用不同的 <格式化> 符号（而不是引号）来定义。',
             'Message Scaffolding & System Prompt': '消息脚手架与系统提示词',
             'tokens (': 'Tokens (',
             'Context Viewer': '上下文查看器',
-            '(max tokens [0]\n                     - output length [256]\n                    \n                     - continue to sentence end allowance [40])': '(最大 Token [0]\n                     - 输出长度 [256]\n                    \n                     - 句子结尾保留余量 [40])',
             'Previous Stage': '上一个阶段',
             'Next Stage': '下一个阶段',
             'Show non-activated entries': '显示未激活的条目',
@@ -894,7 +908,10 @@
             { regex: /^Are you sure you want to flatten "(.*?)"\?$/, replacement: '确定要扁平化 "$1" 吗？' },
             { regex: /^Are you sure you want to flatten '(.*?)'\?$/, replacement: '确定要扁平化 "$1" 吗？' },
             { regex: /^Are you sure you want to reset "(.*?)" to its prompt\?$/, replacement: '确定要将 "$1" 重置为初始提示词吗？' },
-            { regex: /^Are you sure you want to reset '(.*?)' to its prompt\?$/, replacement: '确定要将 "$1" 重置为初始提示词吗？' }
+            { regex: /^Are you sure you want to reset '(.*?)' to its prompt\?$/, replacement: '确定要将 "$1" 重置为初始提示词吗？' },
+            { regex: /^(\d+\/\d+) text generations remaining\.$/, replacement: '还剩 $1 次文本生成。' },
+            { regex: /Context: (\d+) tokens \(max tokens \[(\d+)\] - output length \[(\d+)\] - continue to sentence end allowance \[(\d+)\]\)/, replacement: '上下文: $1 Tokens (最大 Token [$2] - 输出长度 [$3] - 句子结尾保留余量 [$4])' },
+            { regex: /max tokens \[(\d+)\] - output length \[(\d+)\] - continue to sentence end allowance \[(\d+)\]/, replacement: '最大 Token [$1] - 输出长度 [$2] - 句子结尾保留余量 [$3]' },
         ];
 
         function translateNode(node) {
@@ -1024,6 +1041,10 @@
         let isDestroyed = false; // 用于控制销毁
 
         const dict = {
+            'Enter your password': '请输入您的密码',
+            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
+            'Submit': '提交',
+            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们重视您的隐私和安全。您的故事、设置预设以及其他远程存储的内容都在您的电脑上进行了本地加密。为了解密您的内容并保护您的隐私，您必须输入之前设置的密码。',
             'There are issues connecting to the backend right now, please check your connection or try again...': '当前连接后端出现问题，请检查您的网络连接或重试...',
             'Anlas:': '代币:',
             'Author': '作者',
@@ -1185,9 +1206,8 @@
             'Send to Director Tools': '发送至导演工具',
             'Inpaint Image': '局部重绘',
             'Free Trial': '免费试用',
-            '28/30 image generations remaining.': '还剩 28/30 次生成。',
-            'Seen enough?': '体验够了吗？',
-            'Check out our plans': '查看订阅计划',
+            'Seen enough?': '体验如何？',
+            'Check out our plans': '查看我们的订阅计划',
             'New': '全新',
             'NAI Diffusion V4.5 Full': 'NAI Diffusion V4.5 完整版',
             'Our newest and best model.': '我们最新、最强大的模型。',
@@ -1231,9 +1251,7 @@
             'Light': '轻度',
             'Human Focus': '专注人类',
             'None': '无',
-            'We value your privacy and security. Your stories, settings presets, and other remotely stored content is encrypted locally on your computer. In order to decrypt your content and maintain your privacy you must enter the password you set previously.': '我们重视您的隐私和安全。您的故事、设置预设和其他云端内容已在您的电脑上本地加密。为了解密内容，您必须输入之前设置的密码。',
             'Password Required': '需要密码',
-            'You must enter your password to access your stories.': '您必须输入密码才能访问您的故事。',
             'Forgot Password': '忘记密码',
             'Error unlocking keystore: Incorrect password.': '解锁错误：密码不正确。',
             'No custom prompt chunks yet. Click + to add one.': '还没有自定义提示词块。点击 + 号添加。',
@@ -1408,13 +1426,11 @@
             { regex: /^You are currently focused on option (.*?) (\d+) results available\.(.*)$/, replacement: "聚焦于 $1，共有 $2 个结果。" },
             { regex: /^This prompt is using (\d+) of the currently used (\d+) tokens\. Max total tokens: (\d+)$/, replacement: "提示词占用 $1 个 Token (当前共 $2)。限制: $3" },
             { regex: /^(\d+) tokens out of (\d+) tokens used$/, replacement: "已使用 $1 / $2 Token" },
-            // --- 增强/放大设置中的动态数值 ---
             { regex: /^Strength (.*)$/, replacement: "强度 $1" },
             { regex: /^Noise (.*)$/, replacement: "噪声 $1" },
-            // --- 动态角色位置设置翻译 ---
             { regex: /^Set Character (\d+)’s Position$/, replacement: "设置角色 $1 的位置" },
-            // --- 动态角色编号翻译 ---
             { regex: /^Character (\d+)$/, replacement: "角色 $1" },
+            { regex: /^(\d+\/\d+) image generations remaining\.$/, replacement: '还剩 $1 次图像生成。' },
         ];
 
         const ignoreNodes = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'NOSCRIPT', 'CODE', 'INPUT']);
