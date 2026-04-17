@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      4.8.0
+// @version      4.8.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -289,6 +289,7 @@
         'Server': '服务器',
         'New & imported stories will be saved locally and stored encrypted remotely.': '新建和导入的故事将保存在本地，并加密存储在远程。',
         'New & imported stories will be saved locally only.': '新建和导入的故事将仅保存在本地。',
+        'All Stories Saved': '所有故事已保存',
         'Exporting and backing up your stories is highly recommended, should your browser cache get cleared, or if you lose access to your account.': '强烈建议导出并备份您的故事，以防浏览器缓存被清除，或您失去对帐户的访问权限。',
         'Download All Stories': '下载所有故事',
         'Gift Key (Purchasing Disabled)': '礼品密钥 (购买已禁用)',
@@ -404,7 +405,6 @@
         'Remote Storage': '远程存储',
         'Switch to Remote Storage': '切换至远程存储',
         'Keep Local Storage': '保留本地存储',
-        'Author': '作者',
         'Account Settings': '帐户设置',
         'Other': '其他',
         'Image Generation': '图像生成',
@@ -419,7 +419,7 @@
         'Manage Account': '管理帐户',
         'Latest News': '最新消息',
         'Read More': '阅读更多',
-        'Welcome back, Author': '欢迎回来，作者',
+        'Welcome back, Author': '欢迎回来，Author',
 
         // --- 主页/引导 ---
         'Continue a Story': '继续故事',
@@ -873,7 +873,6 @@
         'Rewrite to match the style.': '重写以匹配风格。',
         'Context Management': '上下文管理',
         'Enter a term': '输入术语',
-        'Enter a custom instruction.': '输入自定义指令。',
         'Search for an entry': '搜索条目',
         'Enabled': '已启用',
         'Type here and hit enter to add a stop sequence': '在此输入并按回车以添加停止序列',
