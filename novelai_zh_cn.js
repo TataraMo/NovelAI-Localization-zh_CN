@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      4.8.1
+// @version      4.8.2
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -17,22 +17,9 @@
 (function() {
     'use strict';
 
-    // ==========================================
-    // 1. 设置与开关管理
-    // ==========================================
-    const config = {
-        enable: GM_getValue('enable_translation', true)
-    };
-
-    GM_registerMenuCommand(`[${config.enable ? '√' : '×'}] 全局汉化开关`, () => {
-        GM_setValue('enable_translation', !config.enable);
-        location.reload();
-    });
-
-    if (!config.enable) return;
 
     // ==========================================
-    // 2. 词库
+    // 1. 词库
     // ==========================================
     const i18n = new Map(Object.entries({
         // --- 登录与注册 ---
@@ -409,6 +396,9 @@
         'Other': '其他',
         'Image Generation': '图像生成',
         'Tokenizer': '分词器',
+        'Before your text is sent to the AI, it gets turned into numbers in a process called tokenization. These tokens are how the AI reads and interprets text.': '在您的文本发送给 AI 之前，它会在一个称为“分词”的过程中转换为数字。这些 token 就是 AI 读取和解释文本的方式。',
+        'The tokenizer for your currently selected model is the.': '您当前所选模型的分词器是',
+        'The average token is around 4 characters long, but many common words are their own token.': '平均每个 token 大约有 4 个字符长，但许多常见的单词本身就是一个 token。',
         'User Scripts': '用户脚本',
         'Help': '帮助',
         'Tutorial': '教程',
@@ -441,7 +431,6 @@
         'Before your text is sent to the AI, it gets turned into numbers in a process called tokenization.': '在将您的文本发送到 AI 之前，它会在称为分词的过程中转换为数字。',
         'These tokens are how the AI reads and interprets text.': '这些 Token 是 AI 读取和解释文本的方式。',
         'The average token is around 4 characters long, but many common words are their own token.': '平均 Token 长度约为 4 个字符，但许多常用词本身就是一个 Token。',
-        'The tokenizer for your currently selected model is the GLM Tokenizer.': '您当前选择的模型的分词器是 GLM Tokenizer。',
         'Text Input': '文本输入',
         'ID Input': 'ID 输入',
         'Stories - NovelAI': '故事 - NovelAI',
@@ -1216,6 +1205,60 @@
         'Diagnostics: New User Script': '诊断: 新用户脚本',
         'Poetry and Lyrics': '诗歌和歌词',
         'The em space ( ) is used on a newline when creating poetry or lyrics. Em space is different to the en space and the regular space and makes a big difference!': '在创作诗歌或歌词时，全角空格 ( ) 用于新行。全角空格不同于半角空格和普通空格，它会产生很大的影响！',
+        'No Story selected.': '未选择故事。',
+        'My Custom Script': '我的自定义脚本',
+        'Your name': '您的名字',
+        'Add configurations with the "Add Config" button above.': '使用上方的“添加配置”按钮添加配置。',
+        'Script Permissions': '脚本权限',
+        'Grant permissions to allow this script to access specific features.': '授予权限以允许此脚本访问特定功能。',
+        'Modify Story Content': '修改故事内容',
+        'Allows the script to modify the contents of the story such as Memory, Author\'s Note, System Prompt, Prefill, and Generation Settings.': '允许脚本修改故事内容，例如记忆、作者备注、系统提示词、预填充和生成设置。',
+        'Modify Document Content': '修改文档内容',
+        'Allows the script to modify the contents of the document.': '允许脚本修改文档的内容。',
+        'Modify Lorebook Entries': '修改世界书条目',
+        'Allows the script to create, edit, and delete Lorebook entries and categories.': '允许脚本创建、编辑和删除世界书条目和类别。',
+        'Write to Clipboard': '写入剪贴板',
+        'Allows the script to write text to your clipboard.': '允许脚本将文本写入您的剪贴板。',
+        'File Download': '文件下载',
+        'Allows the script to trigger file downloads to your computer.': '允许脚本触发文件下载到您的计算机。',
+        'File Input': '文件输入',
+        'Allows the script to prompt you to select files from your computer.': '允许脚本提示您从计算机中选择文件。',
+        'Editor Decorations': '编辑器装饰',
+        'Allows the script to add visual decorations to the story editor.': '允许脚本向故事编辑器添加视觉装饰。',
+        'There\'s nothing here.': '这里什么都没有。',
+        'This script hasn\'t stored any data yet.': '此脚本尚未存储任何数据。',
+        'Story Storage': '故事存储',
+        'Clear': '清除',
+        'History-Aware Storage': '历史感知存储',
+        'This script hasn\'t stored any history-aware data yet. History-aware storage tracks values across undo/redo actions.': '此脚本尚未存储任何历史感知数据。历史感知存储可跨撤销/重做操作追踪数据值。',
+        'SCRIPT': '脚本',
+        'Script Logs': '脚本日志',
+        'Download TXT': '下载 TXT',
+        'Download JSON': '下载 JSON',
+        'No Logs Yet': '暂无日志',
+        'Logs from api.v1.log() calls will appear here': '来自 api.v1.log() 调用的日志将显示在这里',
+        'Diagnostics Information': '诊断信息',
+        'Show Diagnostics Popout': '显示诊断弹出窗口',
+        'No diagnostics information available.': '没有可用的诊断信息。',
+        'Script': '脚本',
+        'What does this script do?': '这个脚本是做什么的？',
+        'What does this config option do?': '这个配置选项是做什么的？',
+        'Pretty Name': '显示名称',
+        'Config Name': '配置名称',
+        'Type': '类型',
+        'String': '字符串',
+        'Number': '数字',
+        'Boolean': '布尔值',
+        'Multiline': '多行',
+        'Default Value': '默认值',
+        'Default value': '默认值',
+        '(Reset to Default)': '(重置为默认值)',
+        'Remove': '移除',
+        'Unsaved Changes': '未保存的更改',
+        'Author': '作者',
+        'New Config': '新配置',
+        'Total Account': '账户总计',
+        'Total Story': '故事总计',
 
         // --- 其他杂项与高级生成设置 ---
         'Set a bias on specific tokens to increase or decrease their chance of being generated. Surround with [square brackets] to input token ids (tokenizer specific). If a sequence of tokens is given, only the first will have the bias applied.': '设置特定 Token 的生成偏置，以增加或降低其生成的可能性。使用 [方括号] 包裹以输入 Token ID (针对特定分词器)。如果提供了 Token 序列，则仅对第一个应用偏置。',
@@ -1452,7 +1495,7 @@
     }));
 
     // ==========================================
-    // 3. 动态正则匹配引擎
+    // 2. 动态正则匹配引擎
     // ==========================================
     const regexI18n = [
         { regex: /^Are you sure you want to delete ["'](.*?)["']\?$/, replacement: '确定要删除 "$1" 吗？' },
@@ -1502,10 +1545,11 @@
         { regex: /^Last Edited: (\d+) years? ago$/, replacement: '最后编辑：$1 年前' },
         { regex: /^History \((\d+) Images?\)$/, replacement: '历史记录（$1 张图片）' },
         { regex: /^Last Saved On: (.*?) @ (.*?)$/, replacement: '最后保存时间:$1 @ $2' },
+        { regex: /^Your subscription renews around (.*?) @ (.*?)\.?$/i, replacement: '您的订阅将于 $1 @ $2 左右续期。' },
     ];
 
     // ==========================================
-    // 4. 核心翻译引擎与防抖逻辑
+    // 3. 核心翻译引擎与防抖逻辑
     // ==========================================
 
     // 严禁涉足的 DOM 标签，避免破坏框架绑定和输入区域
@@ -1627,7 +1671,7 @@
     }
 
     // ==========================================
-    // 5. 双重防抖 DOM 监听
+    // 4. 双重防抖 DOM 监听
     // ==========================================
     let pendingMutations = new Set();
     let debounceTimer = null;
