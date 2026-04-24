@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化库
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      1.0.0
+// @version      1.0.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @icon         https://novelai.net/icons/novelai-round.png
