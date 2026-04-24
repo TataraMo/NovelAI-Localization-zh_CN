@@ -1,3 +1,17 @@
+// ==UserScript==
+// @name         NovelAI 简体中文全局汉化库
+// @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
+// @version      1.0.0
+// @description  NovelAI Full Site Localization into Simplified Chinese
+// @author       W是包子N不理, Optimized by Assistant
+// @icon         https://novelai.net/icons/novelai-round.png
+// @require      https://update.greasyfork.org/scripts/575188/1807016/NovelAi_I18N.js
+// @grant        GM_setValue
+// @grant        GM_getValue
+// @grant        GM_registerMenuCommand
+// @license      GPL-3.0-or-later
+// ==/UserScript==
+
 var NAI_I18N = {};
 
 // 1. 静态精准匹配词库 (Static)
