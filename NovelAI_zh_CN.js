@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      5.4.0
+// @version      5.5.0
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -1155,6 +1155,15 @@
         'Speak Inputs, Outputs or both': '朗读输入、输出或两者',
         'Dynamic Repetition Penalty Range': '动态重复惩罚范围',
         'Advanced - Lorebook Generation Settings': '高级 - 世界书生成设置',
+        'Edit': '编辑',
+        'This text is being added by the "Lorebook Category Header" setting in the category this entry belongs to.': '此文本由该条目所属类别中的“世界书类别标题”设置添加。',
+        'Replace docked tab': '替换停靠选项卡',
+        'Undock': '取消停靠',
+        'Formatting Error': '格式化错误',
+        'Select a key to edit it': '选择一个键以对其进行编辑',
+        'Keys': '键',
+        '(docked)': '（停靠）',
+        '(docked)': '（停靠）',
 
         // --- 用户脚本管理 ---
         'New': '新建',
@@ -1256,6 +1265,31 @@
         'New Config': '新配置',
         'Total Account': '账户总计',
         'Total Story': '故事总计',
+        'Some notes about user scripts.': '关于用户脚本的一些注意事项。',
+        'User scripts are custom TypeScript code that can modify and extend NovelAI in various ways. They can add new features or change existing ones. They\'re pretty cool, but there are some important things to keep in mind when using them.': '用户脚本是自定义的 TypeScript 代码，可以通过多种方式修改和扩展 NovelAI。它们可以添加新功能或更改现有功能。它们非常酷，但在使用时有一些重要事项需要牢记。',
+        'Security': '安全性',
+        'Only use scripts from sources you trust. Scripts are run in a sandboxed environment and can\'t freely make network requests, but they can do a lot of things within NovelAI. A malicious script could at the very least annoy you, at the worst corrupt your data. Be cautious.': '仅使用来自您信任的来源的脚本。脚本在沙盒环境中运行，不能自由发出网络请求，但它们可以在 NovelAI 中执行许多操作。恶意脚本至少会给您带来困扰，最坏的情况下会损坏您的数据。请务必谨慎。',
+        'Performance Impact': '性能影响',
+        'Poorly written scripts can slow down NovelAI or cause instability. If you notice performance issues, try disabling your scripts to see if that helps.': '编写糟糕的脚本可能会减慢 NovelAI 的运行速度或导致系统不稳定。如果您注意到性能问题，请尝试禁用您的脚本以查看是否有帮助。',
+        'We can\'t provide support for issues caused by user scripts. If they destroy one of your stories, or cause other problems that isn\'t something we can help with.': '我们无法为由用户脚本引起的问题提供技术支持。如果它们破坏了您的某个故事，或导致了其他问题，我们将无能为力。',
+        'By using user scripts, you acknowledge that you understand these risks and agree to use them responsibly.': '通过使用用户脚本，即表示您承认您了解这些风险，并同意负责任地使用它们。',
+        'Got it': '明白了',
+        'No thanks': '不用了，谢谢',
+        'Use an en space ( ) at the beginning of a newline to effectively mark it as a quotation or excerpt. This is different to both em space and the regular space!': '在新行的开头使用 en 空格（半方空格）可以有效地将其标记为引用或摘录。这与 em 空格（全方空格）和常规空格都不同！',
+        'Genre & Tags': '类型与标签',
+        'Before you begin, we recommend adding a genre and tags to your story. This will help the AI generate more appropriate content.': '在开始之前，我们建议为您​​的故事添加类型和标签。这将有助于 AI 生成更合适的内容。',
+        'Genre': '类型',
+        'Tags': '标签',
+        'e.g., fantasy, thriller, romance': '例如：奇幻、惊悚、爱情',
+        'e.g., magic, gardening, coming-of-age': '例如：魔法、园艺、成长',
+        'Next, what kind of experience do you want to have?': '接下来，您想获得什么样的体验？',
+        'Defines the broad category, tone, and world-building rules (e.g., fantasy, thriller, romance).': '定义大类、基调和世界观规则（例如：奇幻、惊悚、爱情）。',
+        'The "Ingredients" of the story. Specific themes, tropes, or elements the story should include.': '故事的“配料”。故事应包含的特定主题、桥段或元素。',
+        'Keep Placeholders': '保留占位符',
+        'Fill Placeholders': '填充占位符',
+        'A genre and a few tags can go a long way in improving the quality of your generations.': '一个类型和几个标签能极大地提高您的生成质量。',
+
+
 
         // --- 其他杂项与高级生成设置 ---
         'Set a bias on specific tokens to increase or decrease their chance of being generated. Surround with [square brackets] to input token ids (tokenizer specific). If a sequence of tokens is given, only the first will have the bias applied.': '设置特定 Token 的生成偏置，以增加或降低其生成的可能性。使用 [方括号] 包裹以输入 Token ID (针对特定分词器)。如果提供了 Token 序列，则仅对第一个应用偏置。',
@@ -1682,6 +1716,7 @@
         { regex: /^Generate (\d+) Images?$/, replacement: '生成 $1 张图像' },
         { regex: /^Generate Images$/, replacement: '生成图像' },
         { regex: /^\((\d+)\s*Images?\)$/i, replacement: '（$1 张图片）' },
+        { regex: /^(\d+)\s+entries?$/i, replacement: '$1 条记录' },
     ];
 
     // ==========================================
