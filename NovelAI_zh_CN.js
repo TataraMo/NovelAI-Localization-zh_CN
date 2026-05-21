@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      5.5.0
+// @version      5.5.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -732,6 +732,17 @@
         'Delete': '删除',
         'Load': '加载',
         'New Session': '新会话',
+
+        'You have multiple characters set to the same position.': '您设置了多个角色处于相同的位置。',
+        'This will cause low quality results.': '这会导致生成的图像质量下降。',
+        'Please adjust the positions of your characters or enable AI\'s Choice.': '请调整您的角色位置，或开启“AI 自动选择”（AI\'s Choice）。',
+        'Enable/Disable Vibe Transfer Reference Image': '启用/禁用氛围传输参考图',
+        'Export Bundle': '导出数据包',
+        'Embed Into Image': '嵌入至图像',
+        'Export as Encodings': '导出为编码',
+        'Encoding exports don\'t include the original image and can\'t be reencoded for other models or Information Extracted values.': '导出为编码时将不包含原始图像，且无法针对其他模型或“信息提取值”进行重新编码。',
+        'Embed the Vibe Transfer files into a selected image.': '将氛围转移文件嵌入到所选图像中。',
+        'Download All Precise References as ZIP': '下载所有精确参考图为 ZIP 压缩包',
 
         // --- 开局场景 ---
         'Storyteller': '文本创作',
