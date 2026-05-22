@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      5.5.1
+// @version      5.5.2
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -576,7 +576,7 @@
         'Blur': '模糊',
         'Clone': '克隆',
         'Position': '位置',
-        'AI’s Choice': 'AI 的选择',
+        'AI’s Choice': 'AI 自动选择',
         'Slightly Weak': '稍弱',
         'Weak': '弱',
         'Even Weaker': '更弱',
@@ -733,16 +733,21 @@
         'Load': '加载',
         'New Session': '新会话',
 
-        'You have multiple characters set to the same position.': '您设置了多个角色处于相同的位置。',
-        'This will cause low quality results.': '这会导致生成的图像质量下降。',
-        'Please adjust the positions of your characters or enable AI\'s Choice.': '请调整您的角色位置，或开启“AI 自动选择”（AI\'s Choice）。',
-        'Enable/Disable Vibe Transfer Reference Image': '启用/禁用氛围传输参考图',
+        'You have multiple characters set to the same position. This will cause low quality results. Please adjust the positions of your characters or enable AI\'s Choice.': '您设置了多个角色处于相同的位置，这会导致生成的图像质量下降，请调整您的角色位置，或开启“AI 自动选择”。',
+        'Enable/Disable Vibe Transfer Reference Image': '启用/禁用氛围转移参考图',
+        'Imported 1 Vibe Transfer reference image(s).': '已成功导入 1 张氛围转移参考图。',
         'Export Bundle': '导出数据包',
         'Embed Into Image': '嵌入至图像',
         'Export as Encodings': '导出为编码',
         'Encoding exports don\'t include the original image and can\'t be reencoded for other models or Information Extracted values.': '导出为编码时将不包含原始图像，且无法针对其他模型或“信息提取值”进行重新编码。',
         'Embed the Vibe Transfer files into a selected image.': '将氛围转移文件嵌入到所选图像中。',
         'Download All Precise References as ZIP': '下载所有精确参考图为 ZIP 压缩包',
+
+        'Each Vibe Transfer reference image after the fourth costs an additional': '超过 4 张后，每增加一张氛围转移参考图需额外消耗',
+        'This Vibe Transfer reference image is for a different model and will be ignored when generating.': '此氛围转移参考图适用于其他模型，生成时将被忽略。',
+        'Clear Image History?': '清除图像历史记录？',
+        'Are you sure you want to clear your image history? This action cannot be undone.': '您确定要清除您的图像历史记录吗？此操作无法撤销。',
+        'No, Keep History': '不，保留历史记录',
 
         // --- 开局场景 ---
         'Storyteller': '文本创作',
