@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      5.5.2
+// @version      5.5.3
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -635,11 +635,12 @@
         'Tags to increase quality will be prepended to the prompt.': '增加质量的标签将被预先添加到提示词中。',
         'The prompt will be used unmodified.': '将原样使用提示词。',
         'Undesired Content Preset': '不希望的内容预设',
-        'Heavy': '重度',
+        'Heavy': '强效',
         'Disable Tag Suggestions': '禁用标签建议',
         'Highlight Emphasis': '高亮显示重点',
         'Light': '轻度',
-        'Human Focus': '人类焦点',
+        'Human Focus': '人物聚焦',
+        'Furry Focus': '兽人聚焦',
         'None': '无',
         'No custom prompt chunks yet. Click + to add one.': '还没有自定义提示词块。单击 + 添加一个。',
         'Delete All': '全部删除',
@@ -1605,6 +1606,10 @@
         'City is required.': '城市为必填项。',
         'Zip/Postal Code': '邮编',
         'Zip/Postal Code is required.': '邮编为必填项。',
+        'Please make sure you enter the correct Address and ZIP code, or your transaction might be rejected.': '请确保输入正确的地址和邮政编码，否则您的交易可能会被拒绝。',
+        'Your subscription renewal payment has failed. Please update your payment method to not lose access.': '您的订阅续费支付失败。请更新您的支付方式以防失去访问权限。',
+        'Your subscription ends on': '您的订阅将于',
+        'and does not renew.': '结束，且不会自动续费。',
 
         // --- 记录 ---
         'Request History': '请求记录',
