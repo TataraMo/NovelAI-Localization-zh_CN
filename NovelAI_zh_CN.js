@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      5.5.4
+// @version      5.5.5
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理, Optimized by Assistant
 // @match        https://novelai.net/*
@@ -1678,7 +1678,7 @@
         'WebP (Lossless)': 'WebP (无损)',
 
         // --- 新闻标题 ---
-        'Image Generation Canvas Update: New Tools, Better Performance, 和 3D Support': '图像生成画布更新：新工具、性能提升与 3D 支持',
+        'Image Generation Canvas Update: New Tools, Better Performance, and 3D Support': '图像生成画布更新：新工具、性能提升与 3D 支持',
         'Welcome Our Newest Writing Model: Xialong': '欢迎使用我们最新的写作模型：夏龙',
         'Precise Reference Release: Character & Style References + Reference Inpainting': '精准参考功能发布：角色与风格参考 + 参考局部重绘',
         'Our newest and most capable writing model yet is finally available for our Opus subscribers. Welcome Xialong!': '我们迄今为止最新、最强大的写作模型终于向我们的 Opus 订阅者开放了。欢迎夏龙的到来！',
