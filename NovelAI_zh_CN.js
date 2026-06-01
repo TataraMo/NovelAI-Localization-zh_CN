@@ -1854,7 +1854,7 @@
 
         const walker = document.createTreeWalker(
             root,
-            NodeFilter。SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+            NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
             treeWalkerFilter,
             false
         );
