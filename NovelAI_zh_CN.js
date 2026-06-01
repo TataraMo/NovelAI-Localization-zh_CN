@@ -75,7 +75,7 @@
         'Alphabetical': '按字母顺序',
         'Creation Date': '创建日期',
         'New Shelf': '新建书架',
-        'Import File': '导入文件'，
+        'Import File': '导入文件',
         'Text To Speech': '文本转语音',
         'Defaults': '默认设置',
         'Support': '支持',
@@ -97,7 +97,7 @@
         'Default: 0': '默认：0',
 
         // --- 评论输出 ---
-        'Hypebot': 'Hypebot'，
+        'Hypebot': 'Hypebot',
         'Comment Output': '评论输出',
         'Off': '关闭',
         'Automatic': '自动',
@@ -298,7 +298,7 @@
         // --- 语音设置 (TTS) ---
         'Text to Speech Source': '文本转语音源',
         'Local TTS uses your browsers available speech synthesis capabilities.': '本地 TTS 使用您浏览器可用的语音合成功能。',
-        'Streamed TTS is higher quality, uses a model hosted by NovelAI, 和 requires an active subscription. 100 free generations given for trial purposes.': '流式 TTS 质量更高，使用 NovelAI 托管的模型，并且需要有效订阅。提供 100 次免费生成以供试用。',
+        'Streamed TTS is higher quality, uses a model hosted by NovelAI, and requires an active subscription. 100 free generations given for trial purposes.': '流式 TTS 质量更高，使用 NovelAI 托管的模型，并且需要有效订阅。提供 100 次免费生成以供试用。',
         'Your browser does not support local TTS.': '您的浏览器不支持本地 TTS。',
         'Streamed': '流式',
         'TTS will use NovelAI\'s remote TTS service.': 'TTS 将使用 NovelAI 的远程 TTS 服务。',
@@ -830,7 +830,7 @@
         'Save to new Preset?': '保存到新预设？',
         'Other Options': '其他选项',
         'Reset Changes': '重置更改',
-        'Keys that begin and end with "/" are evaluated as regex. These regex keys are case-sensitive and support the following flags: i, s, m, 和 u.': '以 "/" 开始和结束的键将作为正则表达式进行评估。这些正则键区分大小写，并支持以下标志：i, s, m 和 u。',
+        'Keys that begin and end with "/" are evaluated as regex. These regex keys are case-sensitive and support the following flags: i, s, m, and u.': '以 "/" 开始和结束的键将作为正则表达式进行评估。这些正则键区分大小写，并支持以下标志：i, s, m 和 u。',
         'Type information about the entry here.': '在此处输入有关条目的信息。',
 
         // --- 生成选项 ---
@@ -912,7 +912,7 @@
         'Category': '类别',
         'Welcome to': '欢迎来到',
         'the Lorebook!': '世界书！',
-        'The perfect place to flesh out your story’s world, events, locations, characters, 和 environments. There are lots of settings, but you only need to worry about the Entry tab if you’re just getting started.': '充实故事的世界、事件、位置、角色和环境的理想场所。设置有很多，但如果您刚刚入门，只需要关注“条目”选项卡即可。',
+        'The perfect place to flesh out your story’s world, events, locations, characters, and environments. There are lots of settings, but you only need to worry about the Entry tab if you’re just getting started.': '充实故事的世界、事件、位置、角色和环境的理想场所。设置有很多，但如果您刚刚入门，只需要关注“条目”选项卡即可。',
         'Simply place the info about your subject in the Entry Text field, and specify what Activation Keys should be looked for to show the entry to the AI.': '只需将关于您的主题的信息放在“条目文本”字段中，并指定应该寻找哪些激活键以向 AI 显示该条目。',
         'You can get started by clicking the “+ Entry” button.': '您可以通过单击“+ 条目”按钮开始。',
         'Create an Entry': '创建一个条目',
@@ -1590,7 +1590,7 @@
         'First name is invalid.': '名字无效。',
         'Last name is invalid.': '姓氏无效。',
         'Subscribe to': '订阅',
-        'After subscribing you will be charged every 30 天之前.': '订阅后将每 30 天自动扣费一次。',
+        'After subscribing you will be charged every 30 days.': '订阅后将每 30 天自动扣费一次。',
         'Pay $25.00 and Subscribe': '支付 $25.00 并订阅',
         'Pay $10.00 and Subscribe': '支付 $10.00 并订阅',
         'Pay $15.00 and Subscribe': '支付 $15.00 并订阅',
@@ -1678,7 +1678,7 @@
         'WebP (Lossless)': 'WebP (无损)',
 
         // --- 新闻标题 ---
-        'Image Generation Canvas Update: New Tools, Better Performance, and 3D Support': '图像生成画布更新：新工具、性能提升与 3D 支持',
+        'Image Generation Canvas Update: New Tools, Better Performance, 和 3D Support': '图像生成画布更新：新工具、性能提升与 3D 支持',
         'Welcome Our Newest Writing Model: Xialong': '欢迎使用我们最新的写作模型：夏龙',
         'Precise Reference Release: Character & Style References + Reference Inpainting': '精准参考功能发布：角色与风格参考 + 参考局部重绘',
         'Our newest and most capable writing model yet is finally available for our Opus subscribers. Welcome Xialong!': '我们迄今为止最新、最强大的写作模型终于向我们的 Opus 订阅者开放了。欢迎夏龙的到来！',
@@ -1744,6 +1744,7 @@
         { regex: /^\((\d+)\s*Images?\)$/i, replacement: '（$1 张图片）' },
         { regex: /^(\d+)\s+entries?$/i, replacement: '$1 条记录' },
         { regex: /^Imported\s+(\d+)\s+Vibe\s+Transfer\s+reference\s+image\(s\)\.?$/i, replacement: '已导入 $1 张氛围转移参考图。' },
+
     ];
 
     // ==========================================
@@ -1792,7 +1793,7 @@
                 if (normalizedText !== replaced) {
                     let leadingSpace = originalText.match(/^\s*/)[0];
                     let trailingSpace = originalText.match(/\s*$/)[0];
-                    node。nodeValue = leadingSpace + replaced + trailingSpace;
+                    node.nodeValue = leadingSpace + replaced + trailingSpace;
                 }
                 return;
             }
@@ -1853,7 +1854,7 @@
 
         const walker = document.createTreeWalker(
             root,
-            NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
+            NodeFilter。SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
             treeWalkerFilter,
             false
         );
