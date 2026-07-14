@@ -1690,7 +1690,7 @@
         'Search for a tag': '搜索标签',
         'Upload': '上传',
         'Scroll to top': '回到顶部',
-        '[x8JgiM] Unable to connect to NovelAI, please check your internet connection.': '[x8JgiM] 无法连接到NovelAI，请检查你的网络连接。',
+        'Unable to connect to NovelAI, please check your internet connection.': '无法连接到NovelAI，请检查你的网络连接。',
         'Story Conflict Detected': '检测到故事冲突',
         'A newer version of this story is stored remotely. Which one do you want to keep?': '该故事的较新版本已在云端存储。你想保留哪一个？',
         'Local Changes': '本地更改',
