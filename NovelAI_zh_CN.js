@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      6.0.1
+// @version      7.0.0
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -9,11 +9,10 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_registerMenuCommand
-// @downloadURL  https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.user.js
-// @updateURL    https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.meta.js
 // @license      GPL-3.0-or-later
+// @downloadURL https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.user.js
+// @updateURL https://update.greasyfork.org/scripts/571008/NovelAI%20%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87%E5%85%A8%E5%B1%80%E6%B1%89%E5%8C%96.meta.js
 // ==/UserScript==
-
 
 (function() {
     'use strict';
@@ -543,6 +542,18 @@
         'You are subscribed to the Opus tier!': '您已订阅 Opus 层级！',
         'You are subscribed to the Tablet tier!': '您已订阅 Tablet 层级！',
         'You are subscribed to the Scroll tier!': '您已订阅 Scroll 层级！',
+        'Purchase Anlas': '购买Anlas',
+        'Here you can purchase additional Anlas for training your AI Modules and for Image Generation.': '您可以在此购买额外的Anlas，用于训练 AI 模块以及生成图像。',
+        'Subscription Anlas will be refilled according to your subscription every month.': '订阅赠送的点数将根据您的订阅计划按月发放。',
+        '*The discounted Anlas pricing does not apply to accounts with canceled or non-renewing subscriptions.': '*已取消订阅或未开启自动续费的账户不享受点数优惠价格。',
+        'Your Subscription Anlas:': '您的订阅Anlas：',
+        'Your Paid Anlas:': '您购买的Anlas：',
+        'Purchase': '购买',
+        'Do you really want to': '您确定要',
+        'purchase the following?': '购买以下项目吗？',
+        'Confirm Purchase': '确认购买',
+        'Anlas for': 'Anlas 售价',
+
 
         'Update Payment Details': '更新付款详情',
         'Activate a Gift Key': '激活礼品密钥',
@@ -1718,21 +1729,34 @@
         'Image-to-Image generated images are not allowed in NovelAI Explore.': 'NovelAI Explore不允许发布图生图生成的图像。',
         'Inpainting generated images are not allowed in NovelAI Explore.': 'NovelAI Explore不允许发布局部重绘生成的图像。',
 
-
-        // --- 筛选与排序 ---
         'New': '最新',
         'Top': '最佳',
         'Hot': '热门',
         'Day': '过去一天',
         'Only show my posts': '仅显示我的帖子',
         'Only show posts I liked': '仅显示我点赞的帖子',
-
-        // --- 注册弹窗 ---
         'Register for NovelAI Explore': '注册 NovelAI Explore',
         'Choose a display name for the community': '为社区选择一个显示名称',
         'Display Name': '显示名称',
         'Enter your display name': '输入你的显示名称',
         '3-32 characters, lowercase letters, numbers, underscores, hyphens': '3-32 个字符，仅支持小写字母、数字、下划线、连字符',
+        // 功能按钮与操作
+        'Upload to Explore': '上传至社区',
+        'Lock scroll position (disable auto-scroll)': '锁定滚动位置（禁用自动滚动）',
+        'Clear Image History': '清除历史图像',
+        'Copy to Seed': '复制到随机种子',
+
+        // 批量下载弹窗
+        'Download All Images?': '下载所有图像？',
+        'Downloading could take a while, or fail entirely, with large numbers of images.': '图像数量较多时，下载可能需要一些时间，或可能完全失败。',
+        'Never Mind': '取消 / 算了吧',
+
+        // 分辨率预设选项
+        'Normal': '普通',
+        'Large': '大图',
+        'Wallpaper': '壁纸',
+        'Small': '小图',
+        'Custom': '自定义',
 
         // --- 图像操作与举报 ---
         'Use Prompt': '使用提示词',
@@ -1747,14 +1771,56 @@
         'Additional details (optional)': '补充详情（选填）',
         'Submit Report': '提交举报',
 
+        // V5新增
+        'Create a separate prompt for characters in your scene.': '为场景中的角色创建独立的提示词。',
+        'Reference Images': '参考图像',
+        'Quality Tags: Standard': '质量标签：标准',
+        'Standard': '标准',
+        'Resolution': '分辨率',
+        'Transparent BG': '透明背景',
+        'Mode': '模式',
+        'Opus Generation Usage Limit': 'Opus 生成额度限制',
+        'Opus Usage Limit': 'Opus 使用限制',
+        'More Info': '更多信息',
+        'Currently refilling at 0.5% per hour.': '当前恢复速度为每小时 0.5%。',
+        'Always Show Usage Limit Bar': '始终显示额度进度条',
+        'Your Opus subscription includes free NovelAI Diffusion V5 generations at normal resolutions and up to 28 steps. This allowance is limited and refills automatically over time. When it runs out, you can still generate images by spending Anlas.': '您的 Opus 订阅包含在常规分辨率及最高 28 步数下的免费 NovelAI Diffusion V5 生成额度。该额度有上限，并会随时间自动恢复。额度耗尽后，您仍可通过消耗Anlas继续生成图像。',
+        'This image was generated using Inpainting and cannot be reproduced from its metadata.': '此图像是通过局部重绘生成的，无法直接从元数据中完全复现。',
+        'Vibe Transfer is not currently supported for inpainting.': '局部重绘当前不支持风格迁移。',
+        'Having Style References during Inpaint with too much Strength may lead to distortion.': '在局部重绘时如果使用风格参考且强度过高，可能会导致画面失真。',
+
+        'Unable to connect to NovelAI, please check your internet connection.': '无法连接至 NovelAI，请检查您的网络连接。',
+        'Error generating image: 429 Concurrent generation is locked': '图像生成错误：429 并发生成已被锁定',
+
+        'Prompt Guidance': '提示词引导度',
+        'Prompt Guidance Rescale': '提示词引导度重缩放',
+        'Transparency Background': '透明背景',
+        'Alpha Mode for Transparent Images': '透明图像的 Alpha 模式',
+        'Straight': '直通',
+        'Premultiplied': '预乘',
+
+        'Simple Output Viewer': '简易输出查看器',
+        'The output view shows recent generations with decorations.': '输出视图将显示带有修饰效果的近期生成图像。',
+        'Only the current generation is shown, without decorations.': '仅显示当前生成的图像，不附带多余修饰。',
+        'Lock Output Viewer Camera': '锁定输出查看器视角',
+        'The output viewer can be panned and zoomed.': '输出查看器可以平移与缩放。',
+        'Panning and zooming the output viewer is disabled.': '已禁用输出查看器的平移与缩放。',
+        'Reduced Motion': '减弱动态效果',
+        'Output viewer movement will be animated.': '输出查看器的移动将附带动画过渡。',
+        'The output viewer will move without animations.': '输出查看器的移动将直接切换，无过渡动画。',
+
+        'Our newest model, trained on a curated subset of images. Recommended for streaming.': '最新模型，基于精选图像子集训练。推荐用于流式/快速生成。',
+        'Our V4.5 model trained on a curated subset of images. No longer recommended for use.': '基于精选图像子集训练的 V4.5 模型。已不再推荐使用。',
+        'Our V4.5 model. No longer recommended for use.': 'V4.5 模型。已不再推荐使用。',
+
         // --- 新闻标题 ---
         'Set sail into the NovelAI Explore Community': '启航探索 NovelAI 社区',
         'Learn from expert prompters, and show the world your art!': '向资深创作者学习，向世界展示你的画作！',
+        'Usage Limits & Subscription Anlas Policy Adjustments': '使用限制与订阅Anlas政策调整',
+        'NovelAI Diffusion V5 is here!': 'NovelAI Diffusion V5 现已上线！',
+        'Both NovelAI Diffusion V5 Curated and V5 Full are available now!': 'NovelAI Diffusion V5 Curated 与 V5 Full 现已全部上线！',
+        'Subscription Updates': '订阅更新',
         'News': '资讯',
-        'Text & Image Generation Contest Winner Announcement': '图文生成大赛获奖结果公布',
-        'And the winners are...': '获奖者是……',
-        'Five Years of NovelAI': 'NovelAI 五周年',
-        'Announcing the NovelAI Anniversary Contest': 'NovelAI 周年纪念大赛公告'
 
     }));
 
@@ -1818,6 +1884,11 @@
         { regex: /^\((\d+)\s*Images?\)$/i, replacement: '（$1 张图片）' },
         { regex: /^(\d+)\s+entries?$/i, replacement: '$1 条记录' },
         { regex: /^Imported\s+(\d+)\s+Vibe\s+Transfer\s+reference\s+image\(s\)\.?$/i, replacement: '已导入 $1 张氛围转移参考图。' },
+        // 匹配 "100% of Opus Generations remaining"（百分比数字为动态）
+        { regex: /^(\d+)%\s+of\s+Opus\s+Generations\s+remaining\.?$/i, replacement: '剩余 $1% 的 Opus 生成额度' },
+        { regex: /^(\d+)%\s+remaining\.?$/i, replacement: '剩余 $1%' },
+        { regex: /^2000\s+Anlas\s+for\s+\$(\d+(?:\.\d+)?)\??$/i, replacement: '2000 Anlas 售价 $$1？' },
+
 
     ];
 
