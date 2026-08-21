@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      7.0.1
+// @version      7.1.0
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -1837,6 +1837,8 @@
         'Thirds': '三分法则',
         'Phi': '黄金分割',
         'Finish Editing Positions': '完成位置编辑',
+        'Only the current generation is shown, without decorations. Only applies on desktop.': '仅显示当前生成的图像，不附带多余修饰。仅在桌面端生效。',
+        'The output view shows recent generations with decorations. Only applies on desktop.': '输出视图将显示带有修饰效果的近期生成图像。仅在桌面端生效。',
 
         // 导航与返回
         'Back to NovelAI': '返回 NovelAI',
