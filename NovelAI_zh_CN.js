@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      7.0.0
+// @version      7.0.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -498,7 +498,7 @@
         'Removes clutter like text, speech bubbles or other things drawn on top of the image.': '消除画在图像顶部的混乱内容，例如文本、语音气泡或其他事物。',
         'What do you want to do with this image?': '您想如何处理此图像？',
         'Image2Image': '图生图',
-        'Defry': '去噪修复 (Defry)',
+        'Defry': '去噪修复',
         'Prompt (Optional)': '提示词 (可选)',
         'Happy': '高兴',
         'Sad': '悲伤',
@@ -1791,6 +1791,7 @@
 
         'Unable to connect to NovelAI, please check your internet connection.': '无法连接至 NovelAI，请检查您的网络连接。',
         'Error generating image: 429 Concurrent generation is locked': '图像生成错误：429 并发生成已被锁定',
+        'Error generating image: 403 Your account has been restricted due to unusual activity. Free generations are unavailable.': '图像生成错误：403 您的账户因异常活动已被限制，无法使用免费生成。',
 
         'Prompt Guidance': '提示词引导度',
         'Prompt Guidance Rescale': '提示词引导度重缩放',
@@ -1813,6 +1814,32 @@
         'Our V4.5 model trained on a curated subset of images. No longer recommended for use.': '基于精选图像子集训练的 V4.5 模型。已不再推荐使用。',
         'Our V4.5 model. No longer recommended for use.': 'V4.5 模型。已不再推荐使用。',
 
+        'Fidelity': '还原度',
+        'Quality Tags: None': '质量标签：无',
+        'Remove [] / {}, add spaces after commas': '移除 [] / {}，并在逗号后添加空格',
+
+        'Chunks': '词条块',
+        'New Prompt Chunk': '新建提示词块',
+        'Content': '内容',
+        'Uncategorized': '未分类',
+        'Color': '颜色',
+        'Delete All Prompt Chunks?': '删除所有提示词块？',
+        'Are you sure you want to delete all prompt chunks? This action cannot be undone.': '您确定要删除所有提示词块吗？此操作无法撤销。',
+        'Delete All Prompt Chunks': '删除所有提示词块',
+        'All prompt chunks deleted.': '已删除所有提示词块。',
+
+        'UC Preset: Heavy': '负面提示词预设：强',
+        'UC Preset: Light': '负面提示词预设：弱',
+        'UC Preset: Furry Focus': '负面提示词预设：兽人偏向',
+        'UC Preset: Human Focus': '负面提示词预设：人类偏向',
+        'UC Preset: None': '负面提示词预设：无',
+
+        'Thirds': '三分法则',
+        'Phi': '黄金分割',
+        'Finish Editing Positions': '完成位置编辑',
+
+        // 导航与返回
+        'Back to NovelAI': '返回 NovelAI',
         // --- 新闻标题 ---
         'Set sail into the NovelAI Explore Community': '启航探索 NovelAI 社区',
         'Learn from expert prompters, and show the world your art!': '向资深创作者学习，向世界展示你的画作！',
