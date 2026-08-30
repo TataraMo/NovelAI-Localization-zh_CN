@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NovelAI 简体中文全局汉化
 // @namespace    https://github.com/TataraMo/NovelAI-Localization-zh_CN
-// @version      7.1.0
+// @version      7.1.1
 // @description  NovelAI Full Site Localization into Simplified Chinese
 // @author       W是包子N不理
 // @match        https://novelai.net/*
@@ -1583,8 +1583,7 @@
 
         // --- 订阅与账户 ---
         'Reactivate Subscription': '重新激活订阅',
-        'Like what you see?': '喜欢您看到的内容吗？',
-        'Create an account to start.': '创建账号，立即开始。',
+        'Like what you see? Create an account to start.': '喜欢您看到的内容吗？\n创建账号，立即开始。',
 
         // --- 支付方式 ---
         'Credit Card': '信用卡',
@@ -1833,10 +1832,17 @@
         'UC Preset: Furry Focus': '负面提示词预设：兽人偏向',
         'UC Preset: Human Focus': '负面提示词预设：人类偏向',
         'UC Preset: None': '负面提示词预设：无',
+        'Image copied to clipboard': '图像已复制到剪贴板',
+        'Pins': '固定图',
+        '+ New board': '+ 新建画板',
+
+        'Clear Random Prompt Characters': '清除随机提示词角色',
+        'Adds "transparent background" to the prompt.': '在提示词中添加（透明背景）。',
+        'Quality Tags: Light': '质量标签：轻量',
 
         'Thirds': '三分法则',
         'Phi': '黄金分割',
-        'Finish Editing Positions': '完成位置编辑',
+        'Finish Editing Positions': '完成编辑',
         'Only the current generation is shown, without decorations. Only applies on desktop.': '仅显示当前生成的图像，不附带多余修饰。仅在桌面端生效。',
         'The output view shows recent generations with decorations. Only applies on desktop.': '输出视图将显示带有修饰效果的近期生成图像。仅在桌面端生效。',
 
@@ -1913,10 +1919,14 @@
         { regex: /^\((\d+)\s*Images?\)$/i, replacement: '（$1 张图片）' },
         { regex: /^(\d+)\s+entries?$/i, replacement: '$1 条记录' },
         { regex: /^Imported\s+(\d+)\s+Vibe\s+Transfer\s+reference\s+image\(s\)\.?$/i, replacement: '已导入 $1 张氛围转移参考图。' },
-        // 匹配 "100% of Opus Generations remaining"（百分比数字为动态）
+
         { regex: /^(\d+)%\s+of\s+Opus\s+Generations\s+remaining\.?$/i, replacement: '剩余 $1% 的 Opus 生成额度' },
         { regex: /^(\d+)%\s+remaining\.?$/i, replacement: '剩余 $1%' },
         { regex: /^2000\s+Anlas\s+for\s+\$(\d+(?:\.\d+)?)\??$/i, replacement: '2000 Anlas 售价 $$1？' },
+        { regex: /^(\d+)%\s+remaining\s+\(~?(\d+)\s+images?\)$/i, replacement: '剩余 $1%（约 $2 张图片）' },
+        { regex: /^Recovery\s+is\s+paused\s+above\s+(\d+)%\.?$/i, replacement: '超过 $1% 时暂停恢复。' },
+        { regex: /^Currently\s+refills\s+at\s+(\d+)%\s+per\s+day\s+\(~?(\d+)\s+images?\)\.?$/i, replacement: '当前每天恢复 $1%（约 $2 张图片）。' },
+        { regex: /^Board\s*(\d+)$/i, replacement: '画板 $1' },
 
 
     ];
